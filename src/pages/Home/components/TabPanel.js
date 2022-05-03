@@ -19,7 +19,7 @@ const TabPanel = ({ txs }) => {
   }, [txs])
 
   const handleChange = (_, currentPage) => {
-    const fromIdx = !currentPage ? 0 : currentPage * itemsPerPage;
+    const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
     const itemsInPage = txs.slice(fromIdx, fromIdx + itemsPerPage);
 
     const txsArr = [];
@@ -37,7 +37,7 @@ const TabPanel = ({ txs }) => {
     });
   };
 
-  const pages = Math.floor(txs.length / itemsPerPage)
+  const pages = Math.ceil(txs.length / itemsPerPage)
 
   return !!txs.length && (
     <div className="tab-panel">

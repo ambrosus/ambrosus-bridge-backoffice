@@ -97,21 +97,21 @@ const TransactionItem = ({item}) => {
         </TableCell>
         <TableCell>{currentToken.symbol}</TableCell>
         <TableCell>
-          {getNetworkName(item.chainId)}
-          <br/>
           <a href={getTxLink(item.chainId === ethChainId, item.hash)} target="_blank">
-            Explorer link
+            {getNetworkName(item.chainId)} tx
           </a>
         </TableCell>
         <TableCell>
-          {getNetworkName(
-            item.chainId === ambChainId ? ethChainId : ambChainId,
-          )}
-          <br/>
-          {destinationNetTxHash && (
+          {destinationNetTxHash ? (
             <a href={getTxLink(item.chainId !== ethChainId, destinationNetTxHash)} target="_blank">
-              Explorer link
+              {getNetworkName(
+                item.chainId === ambChainId ? ethChainId : ambChainId,
+              )} tx
             </a>
+          ) : (
+            getNetworkName(
+              item.chainId === ambChainId ? ethChainId : ambChainId,
+            )
           )}
         </TableCell>
         <TableCell>
