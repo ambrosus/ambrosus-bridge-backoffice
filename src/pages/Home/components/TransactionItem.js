@@ -77,6 +77,13 @@ const TransactionItem = ({item}) => {
   const getNetworkName = (networkId) =>
     getAllNetworks().find((el) => el.chainId === networkId).name;
 
+  const getTxLink = (isEth, hash) =>
+    `${
+      isEth
+        ? 'https://ropsten.etherscan.io/tx/'
+        : 'https://explorer.ambrosus.io/tx/'
+    }${hash}`;
+
   return (
     <>
       <TableRow
@@ -89,10 +96,22 @@ const TransactionItem = ({item}) => {
           </a>
         </TableCell>
         <TableCell>{currentToken.symbol}</TableCell>
-        <TableCell>{getNetworkName(item.chainId)}</TableCell>
+        <TableCell>
+          {getNetworkName(item.chainId)}
+          <br/>
+          <a href={getTxLink(item.chainId === ethChainId, item.hash)} target="_blank">
+            Explorer link
+          </a>
+        </TableCell>
         <TableCell>
           {getNetworkName(
             item.chainId === ambChainId ? ethChainId : ambChainId,
+          )}
+          <br/>
+          {destinationNetTxHash && (
+            <a href={getTxLink(item.chainId !== ethChainId, destinationNetTxHash)} target="_blank">
+              Explorer link
+            </a>
           )}
         </TableCell>
         <TableCell>
