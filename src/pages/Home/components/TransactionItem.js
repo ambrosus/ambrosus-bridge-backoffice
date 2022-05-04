@@ -7,6 +7,7 @@ import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
 import getEventSignatureByName from '../../../utils/getEventSignatureByName';
 import {getAllNetworks} from '../../../utils/networks';
 import { utils } from 'ethers';
+import Status from './Status';
 
 const TransactionItem = ({item}) => {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -121,7 +122,15 @@ const TransactionItem = ({item}) => {
           {utils.formatUnits(item.args['feeAmount'], currentToken.denomination)}
         </TableCell>
         <TableCell>{formatDate(item.timestamp)}</TableCell>
-        <TableCell>{isSuccess ? 'Success' : 'Pending'}</TableCell>
+        <TableCell>
+          {isSuccess ? 'Success' : (
+            <div>
+              <span>Pending</span>
+              <br/>
+              <Status tx={item} />
+            </div>
+          )}
+        </TableCell>
       </TableRow>
     </>
   )
