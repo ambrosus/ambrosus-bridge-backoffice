@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import createBridgeContract from '../../../utils/contracts';
 import providers, {ambChainId, ethChainId} from '../../../utils/providers';
 import getEventSignatureByName from '../../../utils/getEventSignatureByName';
+import {Button} from '@mui/material';
 
 const withDrawName = 'Withdraw';
 
@@ -60,7 +61,14 @@ const Status = ({ tx }) => {
   return isActive ? (
     <span>{stage}/5</span>
   ) : (
-    <button onClick={handleClick}>Show stage</button>
+    <Button
+      onClick={handleClick}
+      sx={{ padding: '0', fontSize: '10px' }}
+      size="small"
+      variant="outlined"
+    >
+      Pending
+    </Button>
   )
 }
 

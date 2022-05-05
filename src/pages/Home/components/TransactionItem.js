@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {TableCell, TableRow} from '@mui/material';
+import {Button, TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
 import providers, {ambChainId, ethChainId} from '../../../utils/providers';
 import createBridgeContract from '../../../utils/contracts';
@@ -124,11 +124,7 @@ const TransactionItem = ({item}) => {
         <TableCell>{formatDate(item.timestamp)}</TableCell>
         <TableCell>
           {isSuccess ? 'Success' : (
-            <div>
-              <span>Pending</span>
-              <br/>
-              <Status tx={item} />
-            </div>
+            <Status tx={item} />
           )}
         </TableCell>
       </TableRow>
