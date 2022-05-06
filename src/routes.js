@@ -1,6 +1,6 @@
 import React from 'react';
 import Home from './pages/Home';
-import About from './pages/About';
+import Balance from './pages/Balance';
 import Layout from './layouts/Layout';
 
 const routes = [
@@ -11,12 +11,12 @@ const routes = [
     component: () => <Home />,
   },
   {
-    path: '/about',
+    path: '/balance',
     key: 'ROOT',
     exact: true,
     component: () => (
       <Layout>
-        <About />
+        <Balance />
       </Layout>
     ),
   },

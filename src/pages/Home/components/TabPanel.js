@@ -16,7 +16,7 @@ const TabPanel = ({ txs }) => {
 
   useEffect(() => {
     handleChange(null, 1)
-  }, [txs])
+  }, [txs]);
 
   const handleChange = (_, currentPage) => {
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
