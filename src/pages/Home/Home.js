@@ -3,12 +3,28 @@ import {Tab, Tabs} from '@mui/material';
 import providers, {ambChainId, ethChainId} from '../../utils/providers';
 import TabPanel from './components/TabPanel';
 import createBridgeContract from '../../utils/contracts';
+import Balance from '../Balance';
 
 const Home = () => {
   const [currentChainId, setCurrentChainId] = useState(ambChainId);
   const [transactions, setTransactions] = useState([]);
+  const [isAmbPaused, setIsAmbPaused] = useState(false);
+  const [isEthPaused, setIsEthPaused] = useState(false);
+
+  useEffect(async () => {
+    const ambContract = createBridgeContract[ambChainId](providers[ambChainId]);
+    const ethContract = createBridgeContract[ethChainId](providers[ethChainId]);
+
+    const ambPaused = await ambContract.paused();
+    const ethPaused = await ethContract.paused();
+
+    setIsAmbPaused(ambPaused);
+    setIsEthPaused(ethPaused);
+  }, []);
 
   useEffect(() => {
+    if (currentChainId === 'balance') return;
+
     const provider = providers[currentChainId];
     const contract = createBridgeContract[currentChainId](provider);
     setTransactions([]);
@@ -24,6 +40,7 @@ const Home = () => {
   }, [currentChainId]);
 
   const changeTab = (_, chainId) => {
+    console.log(chainId);
     setCurrentChainId(chainId);
   };
 
@@ -32,8 +49,17 @@ const Home = () => {
       <Tabs value={currentChainId} onChange={changeTab} aria-label="basic tabs example">
         <Tab label="Ambrosus" value={ambChainId} />
         <Tab label="Ethereum" value={ethChainId} />
+        <Tab label="Balance" value={'balance'} />
       </Tabs>
-      <TabPanel txs={transactions} />
+      <div className="paused-networks">
+        <p>Eth status: {isEthPaused ? 'Paused' : 'Working'}</p>
+        <p>Amb status: {isAmbPaused ? 'Paused' : 'Working'}</p>
+      </div>
+      {currentChainId === 'balance' ? (
+        <Balance />
+      ) : (
+        <TabPanel txs={transactions} />
+      )}
     </div>
   )
 }
