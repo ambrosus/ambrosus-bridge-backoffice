@@ -35,7 +35,7 @@ const Balance = () => {
   return balances && (
     <div>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+        <Table sx={{ maxWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
               {tableHeads.map((el) => (
