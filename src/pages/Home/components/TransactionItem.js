@@ -38,7 +38,7 @@ const TransactionItem = ({item}) => {
     const currentCoin = Object.values(config.tokens).find((token) =>
       Object.values(token.addresses).some((el) => el && el === tokenAddress),
     );
-    console.log(tokenAddress);
+
     if (currentCoin) {
       setCurrentToken(currentCoin);
     }
