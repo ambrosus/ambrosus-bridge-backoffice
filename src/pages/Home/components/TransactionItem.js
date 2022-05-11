@@ -16,8 +16,6 @@ const TransactionItem = ({item}) => {
   const [tokenName, setTokenName] = useState('');
 
   useEffect(async () => {
-    const transferData = await getEventData('Transfer');
-
     const eventId = item.args.eventId;
     const tokenAddress = item.args['tokenFrom'];
     console.log(item.args);
@@ -55,22 +53,6 @@ const TransactionItem = ({item}) => {
       });
     });
     return tokenName;
-  };
-
-  const getEventData = async (eventName) => {
-    const receipt = await providers[item.chainId].getTransactionReceipt(item.hash);
-    const contract = createBridgeContract[item.chainId](providers[item.chainId]);
-
-    const eventData = receipt.logs.find((log) =>
-      log.topics.some(
-        (topic) => topic === getEventSignatureByName(contract, eventName),
-      ),
-    );
-
-    if (eventData) {
-      return contract.interface.parseLog(eventData);
-    }
-    return null;
   };
 
   const formatDate = (timestamp) => {
