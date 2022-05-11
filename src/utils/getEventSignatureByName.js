@@ -6,7 +6,6 @@ const getEventSignatureByName = (contract, name) => {
   } = contract;
 
   let signature = '';
-
   Object.keys(events).forEach((eventSignature) => {
     if (events[eventSignature].name === name) {
       signature = utils.id(eventSignature);

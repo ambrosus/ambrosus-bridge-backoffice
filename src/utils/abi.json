@@ -1,73 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "sideBridgeAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "adminAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "relayAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "wrappingTokenAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address[]",
-            "name": "tokenThisAddresses",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "tokenSideAddresses",
-            "type": "address[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "fee",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "feeRecipient",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timeframeSeconds",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lockTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minSafetyBlocks",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct CommonStructs.ConstructorArgs",
-        "name": "args",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -241,6 +173,12 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "eventId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "tokenFrom",
         "type": "address"
@@ -254,7 +192,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "eventId",
+        "name": "amount",
         "type": "uint256"
       },
       {
@@ -507,25 +445,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "epochIndex",
-        "type": "uint256"
-      }
-    ],
-    "name": "isEpochDataSet",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "lockTime",
     "outputs": [
@@ -653,47 +572,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "epochNum",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fullSizeIn128Resultion",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "branchDepth",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "merkleNodes",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "setEpochData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_sideBridgeAddress",
-        "type": "address"
-      }
-    ],
-    "name": "setSideBridge",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "sideBridgeAddress",
     "outputs": [
@@ -704,137 +582,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "bytes3",
-                "name": "p0WithNonce",
-                "type": "bytes3"
-              },
-              {
-                "internalType": "bytes3",
-                "name": "p0WithoutNonce",
-                "type": "bytes3"
-              },
-              {
-                "internalType": "bytes",
-                "name": "p1",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes32",
-                "name": "parentOrReceiptHash",
-                "type": "bytes32"
-              },
-              {
-                "internalType": "bytes",
-                "name": "p2",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "difficulty",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "p3",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "number",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "p4",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "p5",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "nonce",
-                "type": "bytes"
-              },
-              {
-                "internalType": "bytes",
-                "name": "p6",
-                "type": "bytes"
-              },
-              {
-                "internalType": "uint256[]",
-                "name": "dataSetLookup",
-                "type": "uint256[]"
-              },
-              {
-                "internalType": "uint256[]",
-                "name": "witnessForLookup",
-                "type": "uint256[]"
-              }
-            ],
-            "internalType": "struct CheckPoW.BlockPoW[]",
-            "name": "blocks",
-            "type": "tuple[]"
-          },
-          {
-            "components": [
-              {
-                "internalType": "bytes[]",
-                "name": "receiptProof",
-                "type": "bytes[]"
-              },
-              {
-                "internalType": "uint256",
-                "name": "eventId",
-                "type": "uint256"
-              },
-              {
-                "components": [
-                  {
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "toAddress",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "internalType": "struct CommonStructs.Transfer[]",
-                "name": "transfers",
-                "type": "tuple[]"
-              }
-            ],
-            "internalType": "struct CommonStructs.TransferProof",
-            "name": "transfer",
-            "type": "tuple"
-          }
-        ],
-        "internalType": "struct CheckPoW.PoWProof",
-        "name": "powProof",
-        "type": "tuple"
-      }
-    ],
-    "name": "submitTransferPoW",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -948,6 +695,13 @@
     "name": "tokensRemoveBatch",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "triggerTransfers",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {

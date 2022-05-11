@@ -13,7 +13,6 @@ const TransactionItem = ({item}) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
   const [currentToken, setCurrentToken] = useState({});
-  const [tokenAmount, setTokenAmount] = useState(0);
   const [tokenName, setTokenName] = useState('');
 
   useEffect(async () => {
@@ -21,18 +20,12 @@ const TransactionItem = ({item}) => {
 
     const eventId = item.args.eventId;
     const tokenAddress = item.args['tokenFrom'];
-
-    if (transferData) {
-      const correctTransfer = transferData.args.queue.find(
-        (el) => el.toAddress === item.from,
-      );
-      setTokenAmount(correctTransfer.amount);
-    }
+    console.log(item.args);
 
     if (BigNumber.from(0).eq(tokenAddress)) {
       setTokenName(item.chainId === ambChainId ? 'AMB' : 'ETH');
     } else {
-      setTokenName(findTokenByAddress(withDrawArgs.tokenFrom));
+      setTokenName(findTokenByAddress(item.args.tokenFrom));
     }
 
     const currentCoin = Object.values(config.tokens).find((token) =>
@@ -54,8 +47,8 @@ const TransactionItem = ({item}) => {
   const findTokenByAddress = (address) => {
     let tokenName;
 
-    Object.keys(tokens).forEach((el) => {
-      Object.values(tokens[el].addresses).forEach((addr) => {
+    Object.keys(config.tokens).forEach((el) => {
+      Object.values(config.tokens[el].addresses).forEach((addr) => {
         if (addr === address) {
           tokenName = el;
         }
@@ -73,6 +66,7 @@ const TransactionItem = ({item}) => {
         (topic) => topic === getEventSignatureByName(contract, eventName),
       ),
     );
+
     if (eventData) {
       return contract.interface.parseLog(eventData);
     }
@@ -136,7 +130,7 @@ const TransactionItem = ({item}) => {
           )}
         </TableCell>
         <TableCell>
-          {utils.formatUnits(tokenAmount, currentToken.denomination)}
+          {utils.formatUnits(item.args.amount, currentToken.denomination)}
         </TableCell>
         <TableCell>
           {utils.formatUnits(item.args['feeAmount'], currentToken.denomination)}
