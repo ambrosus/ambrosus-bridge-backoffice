@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
-import providers, {ambChainId, ethChainId} from '../../../utils/providers';
-import createBridgeContract from '../../../utils/contracts';
+import {ambChainId, ethChainId} from '../../../utils/providers';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
-import getEventSignatureByName from '../../../utils/getEventSignatureByName';
 import {getAllNetworks} from '../../../utils/networks';
 import { utils, BigNumber } from 'ethers';
 import Status from './Status';
@@ -18,7 +16,6 @@ const TransactionItem = ({item}) => {
   useEffect(async () => {
     const eventId = item.args.eventId;
     const tokenAddress = item.args['tokenFrom'];
-    console.log(item.args);
 
     if (BigNumber.from(0).eq(tokenAddress)) {
       setTokenName(item.chainId === ambChainId ? 'AMB' : 'ETH');
