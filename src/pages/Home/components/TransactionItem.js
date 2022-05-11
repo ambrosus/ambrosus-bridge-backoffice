@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Button, TableCell, TableRow} from '@mui/material';
+import {TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
 import providers, {ambChainId, ethChainId} from '../../../utils/providers';
 import createBridgeContract from '../../../utils/contracts';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
 import getEventSignatureByName from '../../../utils/getEventSignatureByName';
 import {getAllNetworks} from '../../../utils/networks';
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import Status from './Status';
 
 const TransactionItem = ({item}) => {
@@ -14,12 +14,13 @@ const TransactionItem = ({item}) => {
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
   const [currentToken, setCurrentToken] = useState({});
   const [tokenAmount, setTokenAmount] = useState(0);
+  const [tokenName, setTokenName] = useState('');
 
   useEffect(async () => {
     const transferData = await getEventData('Transfer');
 
     const eventId = item.args.eventId;
-    const tokenAddress = item.args['tokenTo'];
+    const tokenAddress = item.args['tokenFrom'];
 
     if (transferData) {
       const correctTransfer = transferData.args.queue.find(
@@ -28,10 +29,16 @@ const TransactionItem = ({item}) => {
       setTokenAmount(correctTransfer.amount);
     }
 
+    if (BigNumber.from(0).eq(tokenAddress)) {
+      setTokenName(item.chainId === ambChainId ? 'AMB' : 'ETH');
+    } else {
+      setTokenName(findTokenByAddress(withDrawArgs.tokenFrom));
+    }
+
     const currentCoin = Object.values(config.tokens).find((token) =>
       Object.values(token.addresses).some((el) => el && el === tokenAddress),
     );
-
+    console.log(tokenAddress);
     if (currentCoin) {
       setCurrentToken(currentCoin);
     }
@@ -43,6 +50,19 @@ const TransactionItem = ({item}) => {
       lastStage.length ? lastStage[0].transactionHash : '',
     );
   }, []);
+
+  const findTokenByAddress = (address) => {
+    let tokenName;
+
+    Object.keys(tokens).forEach((el) => {
+      Object.values(tokens[el].addresses).forEach((addr) => {
+        if (addr === address) {
+          tokenName = el;
+        }
+      });
+    });
+    return tokenName;
+  };
 
   const getEventData = async (eventName) => {
     const receipt = await providers[item.chainId].getTransactionReceipt(item.hash);
@@ -96,7 +116,7 @@ const TransactionItem = ({item}) => {
             {item.from}
           </a>
         </TableCell>
-        <TableCell>{currentToken.symbol}</TableCell>
+        <TableCell>{tokenName}</TableCell>
         <TableCell>
           <a href={getTxLink(item.chainId === ethChainId, item.hash)} target="_blank">
             {getNetworkName(item.chainId)} tx
