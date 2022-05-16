@@ -4,8 +4,8 @@ import ABI from './abi.json';
 
 import { ambChainId, ethChainId } from './providers';
 
-export const ambContractAddress = '0xE776102fc41CA89C7D7aA9ee17d805EBfCa39216';
-export const ethContractAddress = '0xdAe415A6f4256e87ad214d339915832F395667e4';
+export const ambContractAddress = '0x48d5cE2A10438559a14D399ca510F4235315dc6e';
+export const ethContractAddress = '0xD1e6566ec0412Cf30c22159c3717bBAe55ea47aD';
 
 const createAmbBridgeContract = (provider) =>
   new ethers.Contract(ambContractAddress, ABI, provider);
