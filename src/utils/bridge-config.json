@@ -1,8 +1,8 @@
 {
   "bridges": {
     "eth": {
-      "amb": "0xA7CB71C94f3fC5Ee2232f8E449461177bc23527B",
-      "side": "0x38eC3621e15a730c42a8094a62886CEA2E0aAEb4"
+      "amb": "0x48d5cE2A10438559a14D399ca510F4235315dc6e",
+      "side": "0xD1e6566ec0412Cf30c22159c3717bBAe55ea47aD"
     },
     "bsc": {
       "amb": "",
@@ -17,8 +17,8 @@
       "logo": "https://media-exp1.licdn.com/dms/image/C560BAQFuR2Fncbgbtg/company-logo_200_200/0/1636390910839?e=2159024400&v=beta&t=W0WA5w02tIEH859mVypmzB_FPn29tS5JqTEYr4EYvps",
       "primaryNet": "amb",
       "addresses": {
-        "amb": "0xBFe020d24F462c65a7A067BbAA1d6fbF6a827347",
-        "eth": "0xfc39db09544dD9bad261682B47E30623e13c567A",
+        "amb": "0x887b6c1CDA3e6C64BF15b37706DE9fF299d70C92",
+        "eth": "0xDAe64026de2E86801d2d419CEEBD6D4b28C80D37",
         "bsc": ""
       },
       "nativeAnalog": "AMB"
@@ -30,7 +30,7 @@
       "logo": "https://ethereum.org/static/bfc04ac72981166c740b189463e1f74c/448ee/eth-diamond-black-white.webp",
       "primaryNet": "eth",
       "addresses": {
-        "amb": "0xEb58F86DaDde6B65dB2ce2091C89E4fE9f49aAf4",
+        "amb": "0xDC573C5c925887F86513d5F96705b79325df1C88",
         "eth": "0xc778417E063141139Fce010982780140Aa0cD5Ab",
         "bsc": ""
       },
