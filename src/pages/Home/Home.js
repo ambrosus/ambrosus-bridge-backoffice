@@ -4,6 +4,7 @@ import providers, {ambChainId, ethChainId} from '../../utils/providers';
 import TabPanel from './components/TabPanel';
 import createBridgeContract from '../../utils/contracts';
 import Balance from '../Balance';
+import Fees from '../Fees/Fees';
 
 const Home = () => {
   const [currentChainId, setCurrentChainId] = useState(ambChainId);
@@ -23,7 +24,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (currentChainId === 'balance') return;
+    if (currentChainId === 'balance' || currentChainId === 'fees') return;
 
     const provider = providers[currentChainId];
     const contract = createBridgeContract[currentChainId](provider);
@@ -40,7 +41,6 @@ const Home = () => {
   }, [currentChainId]);
 
   const changeTab = (_, chainId) => {
-    console.log(chainId);
     setCurrentChainId(chainId);
   };
 
@@ -50,14 +50,19 @@ const Home = () => {
         <Tab label="Ambrosus" value={ambChainId} />
         <Tab label="Ethereum" value={ethChainId} />
         <Tab label="Balance" value={'balance'} />
+        <Tab label="Fees" value={'fees'} />
       </Tabs>
       <div className="paused-networks">
         <p>Eth status: {isEthPaused ? 'Paused' : 'Working'}</p>
         <p>Amb status: {isAmbPaused ? 'Paused' : 'Working'}</p>
       </div>
-      {currentChainId === 'balance' ? (
+      {currentChainId === 'fees' && (
+        <Fees />
+      )}
+      {currentChainId === 'balance' && (
         <Balance />
-      ) : (
+      )}
+      {Number.isInteger(currentChainId) && (
         <TabPanel txs={transactions} />
       )}
     </div>
