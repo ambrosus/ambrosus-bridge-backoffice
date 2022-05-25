@@ -1,14 +1,28 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import providers, {ambChainId, ethChainId} from '../../utils/providers';
 import createBridgeContract from '../../utils/contracts';
-import {Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {
+  Button,
+  Pagination,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material';
 import FeesItem from './components/FeesItem';
 import TabPanel from '../Home/components/TabPanel';
+
+const itemsPerPage = 10;
 
 const Fees = () => {
   const [txs, setTxs] = useState([]);
   const [chainId, setChainId] = useState(ambChainId);
   const [selectedTxs, setSelectedTxs] = useState(null);
+
+  const allTxs = useRef([]);
 
   useEffect(() => {
     const provider = providers[chainId];
@@ -18,9 +32,7 @@ const Fees = () => {
     contract
       .queryFilter(contract.filters.Withdraw())
       .then((res) => mapTxsArray(res.reverse()))
-      .catch((e) => {
-        console.log(e);
-      })
+      .catch((e) => console.log(e));
   }, [chainId]);
 
   const handleSelectedTxs = (item) => {
@@ -45,12 +57,20 @@ const Fees = () => {
         pack.txs.push(el);
       }
     })
-    setTxs(arr);
+    allTxs.current = arr;
+    handlePage(null, 1);
   };
 
   const handleSwitch = () => {
     setChainId((state) => state === ambChainId ? ethChainId : ambChainId);
   };
+
+  const handlePage = (_, currentPage) => {
+    const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
+    const itemsInPage = allTxs.current.slice(fromIdx, fromIdx + itemsPerPage);
+
+    setTxs(itemsInPage);
+  }
 
   const tableHeads = [
     'Event Id',
@@ -58,6 +78,8 @@ const Fees = () => {
     `${chainId !== ambChainId ? 'AMB' : 'ETH'} Fee`,
     'Status'
   ];
+
+  const pages = Math.ceil(allTxs.current.length / 10)
 
   return (
     <div className="fees-page">
@@ -76,6 +98,7 @@ const Fees = () => {
           <TableBody>
             {txs.map((el) => (
               <FeesItem
+                chainId={chainId}
                 key={el.eventId}
                 item={el}
                 handleSelectedTxs={handleSelectedTxs}
@@ -85,6 +108,7 @@ const Fees = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination count={pages} onChange={handlePage}/>
       {selectedTxs && (
         <TabPanel txs={selectedTxs.txs}/>
       )}
