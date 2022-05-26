@@ -4,7 +4,7 @@ import {BigNumber, utils} from 'ethers';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
 import providers, {ambChainId, ethChainId} from '../../../utils/providers';
 
-const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId }) => {
+const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId, ambPrice }) => {
   const [isSuccess, setIsSuccess] = useState(true);
   const [ethFee, setEthFee] = useState(0);
 
@@ -31,6 +31,8 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId }) => {
 
   const handleTxOpen = () => handleSelectedTxs(item);
 
+  const ambFeeUsd = ambPrice.mul(currentFee);
+
   return (
     <TableRow sx={{ background: isOpen ? '#e2e2e2' : 'white' }} onClick={handleTxOpen}>
       <TableCell>
@@ -38,6 +40,8 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId }) => {
       </TableCell>
       <TableCell>
         {utils.formatUnits(currentFee, 18)}
+        /
+        {utils.formatUnits(ambFeeUsd, 18)}
       </TableCell>
       <TableCell>
         {utils.formatUnits(ethFee, 18)}

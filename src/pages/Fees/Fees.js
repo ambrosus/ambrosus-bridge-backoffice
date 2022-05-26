@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import FeesItem from './components/FeesItem';
 import TabPanel from '../Home/components/TabPanel';
+import {BigNumber, utils} from 'ethers';
 
 const itemsPerPage = 10;
 
@@ -21,8 +22,20 @@ const Fees = () => {
   const [txs, setTxs] = useState([]);
   const [chainId, setChainId] = useState(ambChainId);
   const [selectedTxs, setSelectedTxs] = useState(null);
+  const [ambPrice, setAmbPrice] = useState(null);
 
   const allTxs = useRef([]);
+
+  useEffect(() => {
+    fetch('https://token.ambrosus.io/price')
+      .then((response) => response.json())
+      .then(({ data }) => {
+        console.log(data);
+        setAmbPrice(BigNumber.from(
+          utils.parseUnits(data.total_price_usd.toString(), 18),
+        ))
+      });
+  }, []);
 
   useEffect(() => {
     const provider = providers[chainId];
@@ -98,6 +111,7 @@ const Fees = () => {
           <TableBody>
             {txs.map((el) => (
               <FeesItem
+                ambPrice={ambPrice}
                 chainId={chainId}
                 key={el.eventId}
                 item={el}
