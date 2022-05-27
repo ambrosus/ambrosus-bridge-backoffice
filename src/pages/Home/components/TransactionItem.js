@@ -88,7 +88,7 @@ const TransactionItem = ({item}) => {
           {utils.formatUnits(item.args.amount, currentToken.denomination)}
         </TableCell>
         <TableCell>
-          {utils.formatUnits(item.args['feeAmount'], currentToken.denomination)}
+          {utils.formatUnits(item.args['transferFeeAmount'], currentToken.denomination)}
         </TableCell>
         <TableCell>{formatDate(item.timestamp)}</TableCell>
         <TableCell>

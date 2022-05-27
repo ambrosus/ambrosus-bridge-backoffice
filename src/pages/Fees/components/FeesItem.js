@@ -25,7 +25,7 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId, ambPrice }) => {
 
   const currentFee = useMemo(() => {
     return item.txs.reduce((totalBalance, el) => {
-      return totalBalance.add(el.args.feeAmount);
+      return totalBalance.add(el.args.transferFeeAmount);
     }, BigNumber.from(0));
   }, [item]);
 
@@ -40,8 +40,6 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId, ambPrice }) => {
       </TableCell>
       <TableCell>
         {utils.formatUnits(currentFee, 18)}
-        /
-        {utils.formatUnits(ambFeeUsd, 18)}
       </TableCell>
       <TableCell>
         {utils.formatUnits(ethFee, 18)}
