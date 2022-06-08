@@ -31,8 +31,6 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId, ambPrice }) => {
 
   const handleTxOpen = () => handleSelectedTxs(item);
 
-  const ambFeeUsd = ambPrice.mul(currentFee);
-
   return (
     <TableRow sx={{ background: isOpen ? '#e2e2e2' : 'white' }} onClick={handleTxOpen}>
       <TableCell>

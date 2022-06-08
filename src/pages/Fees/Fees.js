@@ -31,9 +31,9 @@ const Fees = () => {
       .then((response) => response.json())
       .then(({ data }) => {
         console.log(data);
-        setAmbPrice(BigNumber.from(
-          utils.parseUnits(data.total_price_usd.toString(), 18),
-        ))
+        // setAmbPrice(BigNumber.from(
+        //   utils.parseUnits(data.total_price_usd.toString(), 18),
+        // ))
       });
   }, []);
 
