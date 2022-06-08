@@ -25,7 +25,7 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId, ambPrice }) => {
 
   const currentFee = useMemo(() => {
     return item.txs.reduce((totalBalance, el) => {
-      return totalBalance.add(el.args.transferFeeAmount).add(el.args.bridgeFeeAmount);
+      return totalBalance.add(el.args.transferFeeAmount);
     }, BigNumber.from(0));
   }, [item]);
 
