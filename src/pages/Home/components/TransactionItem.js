@@ -1,13 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
-import {ethChainId} from '../../../utils/providers';
+import {ambChainId, ethChainId} from '../../../utils/providers';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
 import { utils } from 'ethers';
 import Status from './Status';
 import handleTransferredTokens from '../../../utils/getTransferredTokens';
+import ConfigContext from '../../../context/ConfigContext/context';
+import {getDestinationNet} from '../../../utils/getDestinationNet';
 
 const TransactionItem = ({item}) => {
+  const { tokens, bridges } = useContext(ConfigContext);
+
   const [isSuccess, setIsSuccess] = useState(false);
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
   const [currentToken, setCurrentToken] = useState({});
@@ -20,7 +24,7 @@ const TransactionItem = ({item}) => {
     const eventId = item.args.eventId;
     const tokenAddress = item.args['tokenFrom'];
 
-    setTransferredTokens(handleTransferredTokens(item.args));
+    setTransferredTokens(handleTransferredTokens(item.args, tokens));
 
     const currentCoin = Object.values(config.tokens).find((token) =>
       Object.values(token.addresses).some((el) => el && el === tokenAddress),
@@ -29,8 +33,16 @@ const TransactionItem = ({item}) => {
     if (currentCoin) {
       setCurrentToken(currentCoin);
     }
+    const destNetId = getDestinationNet(item.to, bridges);
+    const otherContractAddress = Object.values(
+      bridges[
+        destNetId === ambChainId
+          ? item.chainId
+          : destNetId
+        ],
+    ).find((el) => el !== item.to);
 
-    const lastStage = await getTxLastStageStatus(item.chainId, eventId);
+    const lastStage = await getTxLastStageStatus(destNetId, eventId, otherContractAddress);
     setIsSuccess(lastStage.length);
 
     setDestinationNetTxHash(

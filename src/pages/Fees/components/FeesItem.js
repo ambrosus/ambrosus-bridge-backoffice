@@ -1,15 +1,29 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import {BigNumber, utils} from 'ethers';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
 import providers, {ambChainId, ethChainId} from '../../../utils/providers';
+import {getDestinationNet} from '../../../utils/getDestinationNet';
+import ConfigContext from '../../../context/ConfigContext/context';
+import {getNetFromAddress} from '../../../utils/getNetFromAddress';
 
-const FeesItem = ({ item, handleSelectedTxs, isOpen, chainId, ambPrice }) => {
+const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }) => {
+  const { bridges } = useContext(ConfigContext);
   const [isSuccess, setIsSuccess] = useState(true);
   const [ethFee, setEthFee] = useState(0);
 
   useEffect(async () => {
-    const lastEvent = await getTxLastStageStatus(chainId, item.eventId);
+    const destNetId = +getDestinationNet(contractAddress, bridges);
+    const chainId = getNetFromAddress(contractAddress, bridges);
+    const otherContractAddress = Object.values(
+      bridges[
+        destNetId === ambChainId
+          ? chainId
+          : destNetId
+        ],
+    ).find((el) => el !== contractAddress);
+
+    const lastEvent = await getTxLastStageStatus(destNetId, item.eventId, otherContractAddress);
 
     if (lastEvent[0]) {
       const txHash = lastEvent[0].transactionHash;

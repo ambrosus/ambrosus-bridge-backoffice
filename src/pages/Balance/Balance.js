@@ -1,30 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import getTokenBalance from '../../utils/getTokenBalance';
-import providers, {ambChainId, ethChainId} from '../../utils/providers';
+import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
 import config from '../../utils/bridge-config.json';
 import {ambContractAddress, ethContractAddress} from '../../utils/contracts';
 import {utils} from 'ethers';
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import ConfigContext from '../../context/ConfigContext/context';
 
 const tableHeads = ['Token name', 'Ambrosus', 'Ethereum', 'Binance Smart Chain'];
 
 const Balance = () => {
+  const { bridges, tokens } = useContext(ConfigContext);
+
   const [balances, setBalances] = useState(null);
 
   useEffect(() => {
+    console.log(bridges, tokens);
     handleBalances();
   }, []);
 
   const handleBalances = async () => {
-    const sambInEth = getTokenBalance(providers[ethChainId], config.tokens.SAMB.addresses.eth, ethContractAddress);
-    const wethInEth = getTokenBalance(providers[ethChainId], config.tokens.WETH.addresses.eth, ethContractAddress);
-    const sambInAmb = getTokenBalance(providers[ambChainId], config.tokens.SAMB.addresses.amb, ambContractAddress);
-    const wethInAmb = getTokenBalance(providers[ambChainId], config.tokens.WETH.addresses.amb, ambContractAddress);
+    const sambInEth = getTokenBalance(providers[ethChainId], getTokenAddress('SAMB', ethChainId), bridges[ethChainId].foreign);
+    const wethInEth = getTokenBalance(providers[ethChainId], getTokenAddress('WETH', ethChainId), bridges[ethChainId].foreign);
+    const sambInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('SAMB', ambChainId), bridges[ethChainId].native);
+    const wethInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('WETH', ambChainId), bridges[ethChainId].native);
 
     Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb])
       .then((res) => {
         setBalances(res);
       })
+  }
+
+  const getTokenAddress = (symbol, chainId) => {
+    return tokens.find((token) => token.symbol === symbol && token.chainId === chainId).address;
   }
 
   return balances && (

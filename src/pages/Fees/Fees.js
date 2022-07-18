@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
-import providers, {ambChainId, ethChainId} from '../../utils/providers';
-import createBridgeContract from '../../utils/contracts';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
+import { createBridgeContract } from '../../utils/contracts';
 import {
   Button,
   Pagination,
@@ -15,12 +15,35 @@ import {
 import FeesItem from './components/FeesItem';
 import TabPanel from '../Home/components/TabPanel';
 import {BigNumber, utils} from 'ethers';
+import ConfigContext from '../../context/ConfigContext/context';
+import {getNetFromAddress} from '../../utils/getNetFromAddress';
 
 const itemsPerPage = 10;
 
 const Fees = () => {
+  const { bridges } = useContext(ConfigContext);
+
+  const contractAddresses = [
+    {
+      label: 'Amb/Eth',
+      address: bridges[ethChainId].native,
+    },
+    {
+      label: 'Eth/Amb',
+      address: bridges[ethChainId].foreign,
+    },
+    {
+      label: 'Amb/Bsc',
+      address: bridges[bscChainId].native,
+    },
+    {
+      label: 'Bsc/Amb',
+      address: bridges[bscChainId].foreign,
+    },
+  ]
+
   const [txs, setTxs] = useState([]);
-  const [chainId, setChainId] = useState(ambChainId);
+  const [chainId, setChainId] = useState(bridges[ethChainId].native);
   const [selectedTxs, setSelectedTxs] = useState(null);
   const [ambPrice, setAmbPrice] = useState(null);
 
@@ -38,8 +61,8 @@ const Fees = () => {
   }, []);
 
   useEffect(() => {
-    const provider = providers[chainId];
-    const contract = createBridgeContract[chainId](provider);
+    const provider = providers[getNetFromAddress(chainId, bridges)];
+    const contract = createBridgeContract(chainId, provider);
     setTxs([]);
 
     contract
@@ -74,10 +97,6 @@ const Fees = () => {
     handlePage(null, 1);
   };
 
-  const handleSwitch = () => {
-    setChainId((state) => state === ambChainId ? ethChainId : ambChainId);
-  };
-
   const handlePage = (_, currentPage) => {
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
     const itemsInPage = allTxs.current.slice(fromIdx, fromIdx + itemsPerPage);
@@ -96,9 +115,16 @@ const Fees = () => {
 
   return (
     <div className="fees-page">
-      <Button sx={{ margin: '20px' }} variant="outlined" onClick={handleSwitch}>
-        Switch network to {chainId === ambChainId ? 'Ethereum' : 'Ambrosus'}
-      </Button>
+      {contractAddresses.map((el) => (
+        <Button
+          sx={{ margin: '20px' }}
+          variant="outlined"
+          onClick={() => setChainId(el.address)}
+          key={el.address}
+        >
+          {el.label}
+        </Button>
+      ))}
       <TableContainer component={Paper}>
         <Table sx={{ maxWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
@@ -112,7 +138,7 @@ const Fees = () => {
             {txs.map((el) => (
               <FeesItem
                 ambPrice={ambPrice}
-                chainId={chainId}
+                contractAddress={chainId}
                 key={el.eventId}
                 item={el}
                 handleSelectedTxs={handleSelectedTxs}
