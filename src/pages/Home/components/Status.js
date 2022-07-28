@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
-import createBridgeContract from '../../../utils/contracts';
+import React, {useContext, useState} from 'react';
+import { createBridgeContract } from '../../../utils/contracts';
 import providers, {ambChainId, ethChainId} from '../../../utils/providers';
 import getEventSignatureByName from '../../../utils/getEventSignatureByName';
 import {Button} from '@mui/material';
+import ConfigContext from '../../../context/ConfigContext/context';
+import {getDestinationNet} from '../../../utils/getDestinationNet';
 
 const withDrawName = 'Withdraw';
 
 const Status = ({ tx }) => {
+  const { bridges } = useContext(ConfigContext);
+
   const [stage, setStage] = useState(1);
   const [isActive, setIsActive] = useState(false);
 
@@ -14,7 +18,7 @@ const Status = ({ tx }) => {
     let currentStage = stage;
 
     const receipt = await providers[tx.chainId].getTransactionReceipt(tx.hash);
-    const contract = createBridgeContract[tx.chainId](providers[tx.chainId]);
+    const contract = createBridgeContract(tx.to, providers[tx.chainId])
 
     const withDrawEvent = receipt.logs.find((log) =>
       log.topics.some(
@@ -39,11 +43,15 @@ const Status = ({ tx }) => {
     if (currentStage === 2 && confirmations === safetyBlockNumber) {
       currentStage = 3;
     }
-    const otherNetId = tx.chainId === ambChainId ? ethChainId : ambChainId;
-    const otherProvider = providers[otherNetId];
 
-    const otherNetworkContract =
-      createBridgeContract[otherNetId](otherProvider);
+    const destNetId = getDestinationNet(tx.to, bridges);
+    const otherContractAddress = Object.values(
+      bridges[
+        tx.chainId !== ambChainId ? tx.chainId : destNetId
+      ],
+    ).find((el) => el !== tx.to);
+
+    const otherNetworkContract = createBridgeContract(otherContractAddress, providers[destNetId]);
 
     const transferSubmitFilter =
       await otherNetworkContract.filters.TransferSubmit(eventId);

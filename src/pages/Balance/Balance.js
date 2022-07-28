@@ -1,35 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import getTokenBalance from '../../utils/getTokenBalance';
-import providers, {ambChainId, ethChainId} from '../../utils/providers';
+import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
 import config from '../../utils/bridge-config.json';
 import {ambContractAddress, ethContractAddress} from '../../utils/contracts';
 import {utils} from 'ethers';
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import ConfigContext from '../../context/ConfigContext/context';
 
 const tableHeads = ['Token name', 'Ambrosus', 'Ethereum', 'Binance Smart Chain'];
 
 const Balance = () => {
+  const { bridges, tokens } = useContext(ConfigContext);
+
   const [balances, setBalances] = useState(null);
 
-  useEffect(async () => {
+  useEffect(() => {
+    console.log(bridges, tokens);
     handleBalances();
   }, []);
 
   const handleBalances = async () => {
-    const sambInEth = getTokenBalance(providers[ethChainId], config.tokens.SAMB.addresses.eth, ethContractAddress);
-    const wethInEth = getTokenBalance(providers[ethChainId], config.tokens.WETH.addresses.eth, ethContractAddress);
-    const sambInAmb = getTokenBalance(providers[ambChainId], config.tokens.SAMB.addresses.amb, ambContractAddress);
-    const wethInAmb = getTokenBalance(providers[ambChainId], config.tokens.WETH.addresses.amb, ambContractAddress);
+    const sambInEth = getTokenBalance(providers[ethChainId], getTokenAddress('SAMB', ethChainId), bridges[ethChainId].foreign);
+    const wethInEth = getTokenBalance(providers[ethChainId], getTokenAddress('WETH', ethChainId), bridges[ethChainId].foreign);
+    const sambInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('SAMB', ambChainId), bridges[ethChainId].native);
+    const wethInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('WETH', ambChainId), bridges[ethChainId].native);
 
-    const ethInEth = providers[ethChainId].getBalance(ethContractAddress);
-    const ambInEth = providers[ethChainId].getBalance(ambContractAddress);
-    const ethInAmb = providers[ambChainId].getBalance(ethContractAddress);
-    const ambInAmb = providers[ambChainId].getBalance(ambContractAddress);
-
-    Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb, ethInEth, ambInEth, ethInAmb, ambInAmb])
+    Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb])
       .then((res) => {
         setBalances(res);
       })
+  }
+
+  const getTokenAddress = (symbol, chainId) => {
+    return tokens.find((token) => token.symbol === symbol && token.chainId === chainId).address;
   }
 
   return balances && (
@@ -45,21 +48,9 @@ const Balance = () => {
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell>AMB</TableCell>
-              <TableCell>{utils.formatUnits(balances[7], 18)}</TableCell>
-              <TableCell>{utils.formatUnits(balances[5], 18)}</TableCell>
-              <TableCell>-</TableCell>
-            </TableRow>
-            <TableRow>
               <TableCell>sAMB</TableCell>
               <TableCell>{utils.formatUnits(balances[2], 18)}</TableCell>
               <TableCell>{utils.formatUnits(balances[0], 18)}</TableCell>
-              <TableCell>-</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>ETH</TableCell>
-              <TableCell>{utils.formatUnits(balances[6], 18)}</TableCell>
-              <TableCell>{utils.formatUnits(balances[4], 18)}</TableCell>
               <TableCell>-</TableCell>
             </TableRow>
             <TableRow>

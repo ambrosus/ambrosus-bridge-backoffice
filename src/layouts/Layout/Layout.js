@@ -1,17 +1,18 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import {AppBar} from '@mui/material';
-import {Link} from 'react-router-dom';
+import ConfigContext from '../../context/ConfigContext/context';
 
 const Layout = (props) => {
+  const { bridges } = useContext(ConfigContext);
+
   const { children } = props;
-  return (
+  return bridges ? (
     <div className="layout">
       <div className="content">
         <div className="page">{children}</div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 Layout.propTypes = {

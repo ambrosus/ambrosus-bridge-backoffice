@@ -1,9 +1,11 @@
 import React from 'react';
-import { Route } from 'react-router';
+import {Redirect, Route} from 'react-router';
 
 export const RouteWithSubRoutes = (route) => {
-  const { path, exact, routes } = route;
+  const { path, exact, routes, protectedRoute } = route;
   return (
+      protectedRoute && !document.cookie.includes('backoffice verified') ?
+          <Redirect to="/" /> :
     <Route
       path={path}
       exact={exact}
