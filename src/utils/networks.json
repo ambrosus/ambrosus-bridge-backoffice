@@ -23,14 +23,14 @@
       "chainId": 97,
       "code": "BSC",
       "explorerUrl": "https://testnet.bscscan.com/",
-      "rpcUrl": "https://bsc.ambrosus-test.io/",
-      "rpcUrlWS": "wss://bsc.ambrosus-test.io/ws"
+      "rpcUrl": "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      "rpcUrlWS": ""
     }
   },
   "testnet": {
     "amb": {
       "name": "Ambrosus Testnet",
-      "chainId": 22039,
+      "chainId": 22040,
       "code": "AMB",
       "explorerUrl": "https://explorer.ambrosus-test.io/",
       "rpcUrl": "https://network.ambrosus-test.io",
@@ -50,8 +50,8 @@
       "chainId": 97,
       "code": "BSC",
       "explorerUrl": "https://testnet.bscscan.com/",
-      "rpcUrl": "https://bsc.ambrosus-test.io/",
-      "rpcUrlWS": "wss://bsc.ambrosus-test.io/ws"
+      "rpcUrl": "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      "rpcUrlWS": ""
     }
   },
   "production": {
@@ -60,7 +60,7 @@
       "chainId": 16718,
       "code": "AMB",
       "explorerUrl": "https://explorer.ambrosus.io/",
-      "rpcUrl": "https://network.ambrosus.io",
+      "rpcUrl": "https://network.ambrosus.io/",
       "rpcUrlWS": "wss://network.ambrosus.io/ws"
     },
     "eth": {
@@ -69,15 +69,15 @@
       "code": "ETH",
       "explorerUrl": "https://etherscan.io/",
       "rpcUrl": "https://mainnet.infura.io/v3/",
-      "rpcUrlWS": "wss://mainnet.infura.io/v3/"
+      "rpcUrlWS": "wss://mainnet.infura.io/ws/v3/"
     },
     "bsc": {
       "name": "Smart Chain",
       "chainId": 56,
       "code": "BSC",
       "explorerUrl": "https://bscscan.com/",
-      "rpcUrl": "",
-      "rpcUrlWS": ""
+      "rpcUrl": "https://bsc-mainnet.nodereal.io/v1/db3ccef74c03410ca2612263c1164886",
+      "rpcUrlWS": "wss://bsc-mainnet.nodereal.io/ws/v1/db3ccef74c03410ca2612263c1164886"
     }
   }
 }
