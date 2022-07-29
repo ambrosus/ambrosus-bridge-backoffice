@@ -2,7 +2,7 @@ import React, {useEffect, useState, useContext, useMemo} from 'react';
 import {Tab, Tabs} from '@mui/material';
 import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
 import TabPanel from './components/TabPanel';
-import { createBridgeContract } from '../../utils/contracts';
+import {ambContractAddress, createBridgeContract, ethContractAddress} from '../../utils/contracts';
 import Balance from '../Balance';
 import Fees from '../Fees/Fees';
 import ConfigContext from '../../context/ConfigContext/context';
@@ -18,11 +18,11 @@ const Home = () => {
 
   useEffect(async () => {
     const ambContract = createBridgeContract(
-      '0xf7E15b720867747a536137f4EFdAB4309225f8D6',
+      '0x19caBC1E34Ab0CC5C62DaA1394f6022B38b75c78',
       providers[ambChainId],
     );
     const ethContract = createBridgeContract(
-      '0x5570DF279dA47Fa46aBa4c1e27b55c8e1d6648A1',
+      '0x0De2669e8A7A6F6CC0cBD3Cf2D1EEaD89e243208',
       providers[ethChainId],
     );
     const ambPaused = await ambContract.paused();
