@@ -32,7 +32,13 @@ const Status = ({ tx }) => {
     const eventId = contract.interface.parseLog(withDrawEvent).args.eventId;
 
     const filter = await contract.filters.Transfer(eventId);
-    const event = await contract.queryFilter(filter);
+
+    const event = await getFirstEventFromContract(
+      contract,
+      filter,
+      receipt.blockNumber,
+    );
+
     if (+currentStage === 1 && event.length) {
       currentStage = 2;
     }
@@ -56,9 +62,11 @@ const Status = ({ tx }) => {
     const transferSubmitFilter =
       await otherNetworkContract.filters.TransferSubmit(eventId);
 
-    const transferSubmitEvent = await otherNetworkContract.queryFilter(
+    const transferSubmitEvent = await getFirstEventFromContract(
+      otherNetworkContract,
       transferSubmitFilter,
     );
+
     if (+currentStage === 3 && transferSubmitEvent.length) {
       currentStage = 4;
     }

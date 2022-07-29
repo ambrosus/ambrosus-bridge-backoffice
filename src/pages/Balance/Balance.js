@@ -15,7 +15,6 @@ const Balance = () => {
   const [balances, setBalances] = useState(null);
 
   useEffect(() => {
-    console.log(bridges, tokens);
     handleBalances();
   }, []);
 

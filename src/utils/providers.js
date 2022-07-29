@@ -35,7 +35,7 @@ const ambBatchProvider = new CustomJsonRpcBatchProvider(
 // binance smart chain read-only provider configuration
 export const bscChainId = allNetworks.bsc.chainId;
 
-const bscProvider = new ethers.providers.StaticJsonRpcProvider(
+export const bscProvider = new ethers.providers.StaticJsonRpcProvider(
   allNetworks.bsc.rpcUrl,
   bscChainId,
 );

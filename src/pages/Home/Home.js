@@ -1,12 +1,13 @@
-import React, {useEffect, useState, useContext, useMemo} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {Tab, Tabs} from '@mui/material';
 import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
 import TabPanel from './components/TabPanel';
-import {ambContractAddress, createBridgeContract, ethContractAddress} from '../../utils/contracts';
+import {createBridgeContract} from '../../utils/contracts';
 import Balance from '../Balance';
 import Fees from '../Fees/Fees';
 import ConfigContext from '../../context/ConfigContext/context';
 import {getNetFromAddress} from '../../utils/getNetFromAddress';
+import getEventsFromContract from '../../utils/getEventsFromContract';
 
 const Home = () => {
   const { bridges } = useContext(ConfigContext);
@@ -35,10 +36,10 @@ const Home = () => {
   useEffect(() => {
     if (currentChainAddress === 99 || currentChainAddress === 100) return;
     const contract = createBridgeContract(currentChainAddress, providers[getNetFromAddress(currentChainAddress, bridges)]);
+    const filter = contract.filters.Withdraw();
     setTransactions([]);
 
-    contract
-      .queryFilter(contract.filters.Withdraw())
+    getEventsFromContract(contract, filter)
       .then((res) => {
         setTransactions(res.reverse());
       })

@@ -1,5 +1,6 @@
 import providers from './providers';
 import { createBridgeContract } from './contracts';
+import getFirstEventFromContract from './getFirstEventFromContract';
 
 const getTxLastStageStatus = async (otherNetId, eventId, address) => {
   const otherProvider = providers[otherNetId];
@@ -9,10 +10,7 @@ const getTxLastStageStatus = async (otherNetId, eventId, address) => {
   const otherNetworkFilter = await otherNetworkContract.filters.TransferFinish(
     eventId,
   );
-  const otherNetworkEvent = await otherNetworkContract.queryFilter(
-    otherNetworkFilter,
-  );
-  return otherNetworkEvent;
+  return getFirstEventFromContract(otherNetworkContract, otherNetworkFilter);
 };
 
 export default getTxLastStageStatus;
