@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
 import { createBridgeContract } from '../../utils/contracts';
 import {
@@ -17,6 +17,9 @@ import TabPanel from '../Home/components/TabPanel';
 import {BigNumber, utils} from 'ethers';
 import ConfigContext from '../../context/ConfigContext/context';
 import {getNetFromAddress} from '../../utils/getNetFromAddress';
+import {getDestinationNet} from '../../utils/getDestinationNet';
+import {getNetworkByChainId} from '../../utils/networks';
+import getEventsFromContract from '../../utils/getEventsFromContract';
 
 const itemsPerPage = 10;
 
@@ -53,7 +56,6 @@ const Fees = () => {
     fetch('https://token.ambrosus.io/price')
       .then((response) => response.json())
       .then(({ data }) => {
-        console.log(data);
         // setAmbPrice(BigNumber.from(
         //   utils.parseUnits(data.total_price_usd.toString(), 18),
         // ))
@@ -65,8 +67,7 @@ const Fees = () => {
     const contract = createBridgeContract(chainId, provider);
     setTxs([]);
 
-    contract
-      .queryFilter(contract.filters.Withdraw())
+    getEventsFromContract(contract, contract.filters.Withdraw())
       .then((res) => mapTxsArray(res.reverse()))
       .catch((e) => console.log(e));
   }, [chainId]);
@@ -104,12 +105,12 @@ const Fees = () => {
     setTxs(itemsInPage);
   }
 
-  const tableHeads = [
+  const tableHeads = useMemo(() => [
     'Event Id',
-    `${chainId === ambChainId ? 'AMB' : 'ETH'} Fee`,
-    `${chainId !== ambChainId ? 'AMB' : 'ETH'} Fee`,
+    `${getNetworkByChainId(+getNetFromAddress(chainId, bridges)).code} Fee`,
+    `${getNetworkByChainId(+getDestinationNet(chainId, bridges)).code} Fee`,
     'Status'
-  ];
+  ], [chainId]);
 
   const pages = Math.ceil(allTxs.current.length / 10)
 

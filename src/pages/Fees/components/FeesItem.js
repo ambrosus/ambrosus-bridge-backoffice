@@ -10,11 +10,12 @@ import {getNetFromAddress} from '../../../utils/getNetFromAddress';
 const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }) => {
   const { bridges } = useContext(ConfigContext);
   const [isSuccess, setIsSuccess] = useState(true);
-  const [ethFee, setEthFee] = useState(0);
+  const [otherFee, setOtherFee] = useState(0);
 
   useEffect(async () => {
     const destNetId = +getDestinationNet(contractAddress, bridges);
     const chainId = getNetFromAddress(contractAddress, bridges);
+
     const otherContractAddress = Object.values(
       bridges[
         destNetId === ambChainId
@@ -23,19 +24,35 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }
         ],
     ).find((el) => el !== contractAddress);
 
-    const lastEvent = await getTxLastStageStatus(destNetId, item.eventId, otherContractAddress);
-
-    if (lastEvent[0]) {
-      const txHash = lastEvent[0].transactionHash;
-      const txReceipt =
-        await providers[chainId === ambChainId ? ethChainId : ambChainId]
-          .getTransactionReceipt(txHash);
-
-      setEthFee(txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice))
-    } else {
-      setIsSuccess(false);
-    }
+    Promise.all([
+      getTxLastStageStatus(destNetId, item.eventId, otherContractAddress),
+      getTxLastStageStatus(destNetId, item.eventId, otherContractAddress, 'TransferSubmit')
+    ])
+      .then(([finishEvent, submitEvent]) => {
+        if (finishEvent[0]) {
+          Promise.all([
+            calculateDestNetTxFee(finishEvent[0], destNetId),
+            calculateDestNetTxFee(submitEvent[0], destNetId),
+          ])
+            .then((response) => setOtherFee(response[0].add(response[1])))
+        } else {
+          setIsSuccess(false);
+        }
+      })
   }, []);
+
+  const calculateDestNetTxFee = async (event, destNetId) => {
+    const txHash = event.transactionHash;
+    let sum = 0;
+
+    await Promise.all([
+      providers[destNetId].getTransactionReceipt(txHash),
+      providers[destNetId].getTransaction(txHash)
+    ])
+      .then(([receipt, tx]) => sum = receipt.gasUsed.mul(tx.gasPrice));
+
+    return sum;
+  }
 
   const currentFee = useMemo(() => {
     return item.txs.reduce((totalBalance, el) => {
@@ -54,7 +71,7 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }
         {utils.formatUnits(currentFee, 18)}
       </TableCell>
       <TableCell>
-        {utils.formatUnits(ethFee, 18)}
+        {otherFee === 0 ? 'loading' : utils.formatUnits(otherFee, 18)}
       </TableCell>
       <TableCell>
         {isSuccess ? 'Success' : 'Pending'}
