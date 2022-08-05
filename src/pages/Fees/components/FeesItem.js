@@ -34,10 +34,15 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }
             calculateDestNetTxFee(finishEvent[0], destNetId),
             calculateDestNetTxFee(submitEvent[0], destNetId),
           ])
-            .then((response) => setOtherFee(response[0].add(response[1])))
+            .then((response) => {
+              setOtherFee(response[0].add(response[1]))
+            })
         } else {
           setIsSuccess(false);
         }
+      })
+      .catch((e) => {
+        console.log(e);
       })
   }, []);
 
