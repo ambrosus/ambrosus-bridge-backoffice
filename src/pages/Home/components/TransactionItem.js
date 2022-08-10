@@ -1,27 +1,30 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
 import {ambChainId, ethChainId} from '../../../utils/providers';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
-import {getAllNetworks} from '../../../utils/networks';
-import { utils, BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import Status from './Status';
+import handleTransferredTokens from '../../../utils/getTransferredTokens';
+import ConfigContext from '../../../context/ConfigContext/context';
+import {getDestinationNet} from '../../../utils/getDestinationNet';
 
 const TransactionItem = ({item}) => {
+  const { tokens, bridges } = useContext(ConfigContext);
+
   const [isSuccess, setIsSuccess] = useState(false);
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
   const [currentToken, setCurrentToken] = useState({});
-  const [tokenName, setTokenName] = useState('');
+  const [transferredTokens, setTransferredTokens] = useState({
+    from: '',
+    to: '',
+  });
 
   useEffect(async () => {
     const eventId = item.args.eventId;
     const tokenAddress = item.args['tokenFrom'];
 
-    if (BigNumber.from(0).eq(tokenAddress)) {
-      setTokenName(item.chainId === ambChainId ? 'AMB' : 'ETH');
-    } else {
-      setTokenName(findTokenByAddress(item.args.tokenFrom));
-    }
+    setTransferredTokens(handleTransferredTokens(item.args, tokens));
 
     const currentCoin = Object.values(config.tokens).find((token) =>
       Object.values(token.addresses).some((el) => el && el === tokenAddress),
@@ -30,27 +33,22 @@ const TransactionItem = ({item}) => {
     if (currentCoin) {
       setCurrentToken(currentCoin);
     }
+    const destNetId = getDestinationNet(item.to, bridges);
+    const otherContractAddress = Object.values(
+      bridges[
+        destNetId === ambChainId
+          ? item.chainId
+          : destNetId
+        ],
+    ).find((el) => el !== item.to);
 
-    const lastStage = await getTxLastStageStatus(item.chainId, eventId);
+    const lastStage = await getTxLastStageStatus(destNetId, eventId, otherContractAddress);
     setIsSuccess(lastStage.length);
 
     setDestinationNetTxHash(
       lastStage.length ? lastStage[0].transactionHash : '',
     );
   }, []);
-
-  const findTokenByAddress = (address) => {
-    let tokenName;
-
-    Object.keys(config.tokens).forEach((el) => {
-      Object.values(config.tokens[el].addresses).forEach((addr) => {
-        if (addr === address) {
-          tokenName = el;
-        }
-      });
-    });
-    return tokenName;
-  };
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp * 1000);
@@ -67,9 +65,6 @@ const TransactionItem = ({item}) => {
       .toString()
       .padStart(2, '0')}`;
   };
-
-  const getNetworkName = (networkId) =>
-    getAllNetworks().find((el) => el.chainId === networkId).name;
 
   const getTxLink = (isEth, hash) =>
     `${
@@ -89,30 +84,23 @@ const TransactionItem = ({item}) => {
             {item.from}
           </a>
         </TableCell>
-        <TableCell>{tokenName}</TableCell>
         <TableCell>
           <a href={getTxLink(item.chainId === ethChainId, item.hash)} target="_blank">
-            {getNetworkName(item.chainId)} tx
+            {transferredTokens.from}
           </a>
-        </TableCell>
-        <TableCell>
+          ->
           {destinationNetTxHash ? (
             <a href={getTxLink(item.chainId !== ethChainId, destinationNetTxHash)} target="_blank">
-              {getNetworkName(
-                item.chainId === ambChainId ? ethChainId : ambChainId,
-              )} tx
+              {transferredTokens.to}
             </a>
-          ) : (
-            getNetworkName(
-              item.chainId === ambChainId ? ethChainId : ambChainId,
-            )
-          )}
+          ) : transferredTokens.to}
         </TableCell>
+        <TableCell>{item.args.eventId.toNumber()}</TableCell>
         <TableCell>
           {utils.formatUnits(item.args.amount, currentToken.denomination)}
         </TableCell>
         <TableCell>
-          {utils.formatUnits(item.args['feeAmount'], currentToken.denomination)}
+          {utils.formatUnits(item.args['transferFeeAmount'].add(item.args['bridgeFeeAmount']), currentToken.denomination)}
         </TableCell>
         <TableCell>{formatDate(item.timestamp)}</TableCell>
         <TableCell>

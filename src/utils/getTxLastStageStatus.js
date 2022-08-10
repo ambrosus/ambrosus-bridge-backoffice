@@ -1,19 +1,16 @@
-import providers, { ambChainId, ethChainId } from './providers';
-import createBridgeContract from './contracts';
+import providers from './providers';
+import { createBridgeContract } from './contracts';
+import getFirstEventFromContract from './getFirstEventFromContract';
 
-const getTxLastStageStatus = async (chainId, eventId) => {
-  const otherNetId = chainId === ambChainId ? ethChainId : ambChainId;
+const getTxLastStageStatus = async (otherNetId, eventId, address, eventName = 'TransferFinish') => {
   const otherProvider = providers[otherNetId];
 
-  const otherNetworkContract = createBridgeContract[otherNetId](otherProvider);
+  const otherNetworkContract = createBridgeContract(address, otherProvider);
 
-  const otherNetworkFilter = await otherNetworkContract.filters.TransferFinish(
+  const otherNetworkFilter = await otherNetworkContract.filters[eventName](
     eventId,
   );
-  const otherNetworkEvent = await otherNetworkContract.queryFilter(
-    otherNetworkFilter,
-  );
-  return otherNetworkEvent;
+  return getFirstEventFromContract(otherNetworkContract, otherNetworkFilter);
 };
 
 export default getTxLastStageStatus;

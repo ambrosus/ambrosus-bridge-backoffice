@@ -3,7 +3,7 @@ import {Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHea
 import TransactionItem from './TransactionItem';
 
 const itemsPerPage = 20;
-const tableHeads = ['Address', 'Token', 'Departure net', 'Destination net', 'Amount', 'Fee', 'Date', 'Status'];
+const tableHeads = ['Address', 'Token', 'Event id', 'Amount', 'Fee', 'Date', 'Status'];
 
 const TabPanel = ({ txs }) => {
   const [currentItems, setCurrentItems] = useState([]);
