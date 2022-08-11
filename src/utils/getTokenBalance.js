@@ -12,6 +12,7 @@ const getTokenBalance = async (
       type: 'function',
     },
   ];
+  console.log(tokenContractAddress, provider._network);
   const contract = new ethers.Contract(tokenContractAddress, minABI, provider);
 
   return contract.totalSupply();
