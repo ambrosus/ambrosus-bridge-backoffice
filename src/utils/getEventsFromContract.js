@@ -1,6 +1,6 @@
 import { bscChainId, bscProvider } from './providers';
 
-const { REACT_APP_BSC_FROM_BLOCK } = process.env;
+const { REACT_APP_BSC_FROM_BLOCK, REACT_APP_BSC_LOGS_LIMIT } = process.env;
 
 const getEventsFromContract = async (
   contract,
@@ -29,9 +29,9 @@ const recursiveQueryFilter = async (
   const result = await contract.queryFilter(
     filter,
     startBlock,
-    startBlock + 49999 < endBlock ? startBlock + 49999 : endBlock,
+    startBlock + +REACT_APP_BSC_LOGS_LIMIT < endBlock ? startBlock + +REACT_APP_BSC_LOGS_LIMIT : endBlock,
   );
-  return recursiveQueryFilter(contract, filter, startBlock + 49999, endBlock, [
+  return recursiveQueryFilter(contract, filter, startBlock + +REACT_APP_BSC_LOGS_LIMIT, endBlock, [
     ...lastResult,
     ...result,
   ]);

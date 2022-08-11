@@ -1,8 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import getTokenBalance from '../../utils/getTokenBalance';
 import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
-import config from '../../utils/bridge-config.json';
-import {ambContractAddress, ethContractAddress} from '../../utils/contracts';
 import {utils} from 'ethers';
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import ConfigContext from '../../context/ConfigContext/context';
@@ -24,8 +22,13 @@ const Balance = () => {
     const sambInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('SAMB', ambChainId), bridges[ethChainId].native);
     const wethInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('WETH', ambChainId), bridges[ethChainId].native);
 
-    Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb])
+    const sambInBnb = getTokenBalance(providers[bscChainId], getTokenAddress('SAMB', bscChainId), bridges[bscChainId].foreign);
+    const wbnbInBnb = getTokenBalance(providers[bscChainId], getTokenAddress('WBNB', bscChainId), bridges[bscChainId].foreign);
+    const wbnbInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('WBNB', ambChainId), bridges[bscChainId].native);
+
+    Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb, sambInBnb, wbnbInBnb, wbnbInAmb])
       .then((res) => {
+        console.log(res);
         setBalances(res);
       })
   }
@@ -50,13 +53,19 @@ const Balance = () => {
               <TableCell>sAMB</TableCell>
               <TableCell>{utils.formatUnits(balances[2], 18)}</TableCell>
               <TableCell>{utils.formatUnits(balances[0], 18)}</TableCell>
-              <TableCell>-</TableCell>
+              <TableCell>{utils.formatUnits(balances[4], 18)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>wETH</TableCell>
               <TableCell>{utils.formatUnits(balances[3], 18)}</TableCell>
               <TableCell>{utils.formatUnits(balances[1], 18)}</TableCell>
               <TableCell>-</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>wBNB</TableCell>
+              <TableCell>{utils.formatUnits(balances[6], 18)}</TableCell>
+              <TableCell>-</TableCell>
+              <TableCell>{utils.formatUnits(balances[5], 18)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
