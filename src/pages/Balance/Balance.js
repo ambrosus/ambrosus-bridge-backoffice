@@ -37,6 +37,11 @@ const Balance = () => {
     return tokens.find((token) => token.symbol === symbol && token.chainId === chainId).address;
   }
 
+  const formatValue = (value) => {
+    const splited = value.split('.');
+    return `${splited[0]}.${splited[1].slice(0, 6)}`
+  }
+
   return balances && (
     <div>
       <TableContainer component={Paper}>
@@ -51,21 +56,21 @@ const Balance = () => {
           <TableBody>
             <TableRow>
               <TableCell>sAMB</TableCell>
-              <TableCell>{utils.formatUnits(balances[2], 18)}</TableCell>
-              <TableCell>{utils.formatUnits(balances[0], 18)}</TableCell>
-              <TableCell>{utils.formatUnits(balances[4], 18)}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[2], 18))}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[0], 18))}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[4], 18))}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>wETH</TableCell>
-              <TableCell>{utils.formatUnits(balances[3], 18)}</TableCell>
-              <TableCell>{utils.formatUnits(balances[1], 18)}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[3], 18))}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[1], 18))}</TableCell>
               <TableCell>-</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>wBNB</TableCell>
-              <TableCell>{utils.formatUnits(balances[6], 18)}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[6], 18))}</TableCell>
               <TableCell>-</TableCell>
-              <TableCell>{utils.formatUnits(balances[5], 18)}</TableCell>
+              <TableCell>{formatValue(utils.formatUnits(balances[5], 18))}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

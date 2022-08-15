@@ -1,10 +1,11 @@
 import React, {useContext, useState} from 'react';
 import { createBridgeContract } from '../../../utils/contracts';
-import providers, {ambChainId, ethChainId} from '../../../utils/providers';
+import providers, {ambChainId} from '../../../utils/providers';
 import getEventSignatureByName from '../../../utils/getEventSignatureByName';
 import {Button} from '@mui/material';
 import ConfigContext from '../../../context/ConfigContext/context';
 import {getDestinationNet} from '../../../utils/getDestinationNet';
+import getFirstEventFromContract from '../../../utils/getFirstEventFromContract';
 
 const withDrawName = 'Withdraw';
 
