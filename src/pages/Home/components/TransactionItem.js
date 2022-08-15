@@ -8,6 +8,7 @@ import Status from './Status';
 import handleTransferredTokens from '../../../utils/getTransferredTokens';
 import ConfigContext from '../../../context/ConfigContext/context';
 import {getDestinationNet} from '../../../utils/getDestinationNet';
+import {allNetworks} from '../../../utils/networks';
 
 const TransactionItem = ({item}) => {
   const { tokens, bridges } = useContext(ConfigContext);
@@ -66,12 +67,12 @@ const TransactionItem = ({item}) => {
       .padStart(2, '0')}`;
   };
 
-  const getTxLink = (isEth, hash) =>
-    `${
-      isEth
-        ? 'https://ropsten.etherscan.io/tx/'
-        : 'https://explorer.ambrosus.io/tx/'
-    }${hash}`;
+  const getTxLink = (chainId, hash) => {
+    const explorerLink = Object.values(allNetworks).find(
+      (el) => el.chainId === chainId,
+    );
+    return explorerLink ? `${explorerLink.explorerUrl}tx/${hash}` : null;
+  };
 
   return (
     <>
@@ -85,12 +86,12 @@ const TransactionItem = ({item}) => {
           </a>
         </TableCell>
         <TableCell>
-          <a href={getTxLink(item.chainId === ethChainId, item.hash)} target="_blank">
+          <a href={getTxLink(item.chainId, item.hash)} target="_blank">
             {transferredTokens.from}
           </a>
           ->
           {destinationNetTxHash ? (
-            <a href={getTxLink(item.chainId !== ethChainId, destinationNetTxHash)} target="_blank">
+            <a href={getTxLink(+getDestinationNet(item.to, bridges), destinationNetTxHash)} target="_blank">
               {transferredTokens.to}
             </a>
           ) : transferredTokens.to}
