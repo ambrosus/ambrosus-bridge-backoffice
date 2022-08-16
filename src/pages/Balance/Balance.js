@@ -4,6 +4,7 @@ import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/provide
 import {utils} from 'ethers';
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import ConfigContext from '../../context/ConfigContext/context';
+import formatValue from '../../utils/formatAmount';
 
 const tableHeads = ['Token name', 'Ambrosus', 'Ethereum', 'Binance Smart Chain'];
 
@@ -30,17 +31,12 @@ const Balance = () => {
       .then((res) => {
         console.log(res);
         setBalances(res);
-      })
-  }
+      });
+  };
 
   const getTokenAddress = (symbol, chainId) => {
     return tokens.find((token) => token.symbol === symbol && token.chainId === chainId).address;
-  }
-
-  const formatValue = (value) => {
-    const splited = value.split('.');
-    return `${splited[0]}.${splited[1].slice(0, 6)}`
-  }
+  };
 
   return balances && (
     <div>
