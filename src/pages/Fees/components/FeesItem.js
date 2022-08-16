@@ -6,6 +6,7 @@ import providers, {ambChainId, ethChainId} from '../../../utils/providers';
 import {getDestinationNet} from '../../../utils/getDestinationNet';
 import ConfigContext from '../../../context/ConfigContext/context';
 import {getNetFromAddress} from '../../../utils/getNetFromAddress';
+import formatAmount from '../../../utils/formatAmount';
 
 const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }) => {
   const { bridges } = useContext(ConfigContext);
@@ -68,10 +69,10 @@ const FeesItem = ({ item, handleSelectedTxs, isOpen, contractAddress, ambPrice }
         #{item.eventId}
       </TableCell>
       <TableCell>
-        {utils.formatUnits(currentFee, 18)}
+        {formatAmount(utils.formatUnits(currentFee, 18))}
       </TableCell>
       <TableCell>
-        {otherFee === 0 ? 'loading' : utils.formatUnits(otherFee, 18)}
+        {otherFee === 0 ? 'loading' : formatAmount(utils.formatUnits(otherFee, 18))}
       </TableCell>
       <TableCell>
         {isSuccess ? 'Success' : 'Pending'}

@@ -66,7 +66,8 @@ const Fees = () => {
     const provider = providers[getNetFromAddress(chainId, bridges)];
     const contract = createBridgeContract(chainId, provider);
     setTxs([]);
-
+    setSelectedTxs(null);
+    
     getEventsFromContract(contract, contract.filters.Withdraw())
       .then((res) => mapTxsArray(res.reverse()))
       .catch((e) => console.log(e));
