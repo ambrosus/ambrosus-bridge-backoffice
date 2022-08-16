@@ -100,6 +100,8 @@ const Fees = () => {
   };
 
   const handlePage = (_, currentPage) => {
+    setSelectedTxs(null);
+
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
     const itemsInPage = allTxs.current.slice(fromIdx, fromIdx + itemsPerPage);
 
