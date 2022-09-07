@@ -1,4 +1,5 @@
-import { allNetworks } from './networks.js';
+import { utils } from 'ethers';
+import { allNetworks } from './networks';
 
 const formatTokenListFromConfig = (tokens) =>
   Object.values(tokens).reduce((list, token) => {
@@ -6,30 +7,33 @@ const formatTokenListFromConfig = (tokens) =>
       ...token,
       chainId: allNetworks.amb.chainId,
       address: token.addresses.amb,
-      primaryNet: allNetworks[token.primaryNet].chainId,
+      primaryNets: formatPrimaryNets(token.primaryNets),
       balance: '',
     };
     const ethTokenEntity = {
       ...token,
       chainId: allNetworks.eth.chainId,
       address: token.addresses.eth,
-      primaryNet: allNetworks[token.primaryNet].chainId,
+      primaryNets: formatPrimaryNets(token.primaryNets),
       balance: '',
     };
     const bscTokenEntity = {
       ...token,
       chainId: allNetworks.bsc.chainId,
       address: token.addresses.bsc,
-      primaryNet: allNetworks[token.primaryNet].chainId,
+      primaryNets: formatPrimaryNets(token.primaryNets),
       balance: '',
     };
 
     return [
       ...list,
-      ...(token.addresses.amb ? [ambTokenEntity] : []),
-      ...(token.addresses.eth ? [ethTokenEntity] : []),
-      ...(token.addresses.bsc ? [bscTokenEntity] : []),
+      ...(utils.isAddress(token.addresses.amb) ? [ambTokenEntity] : []),
+      ...(utils.isAddress(token.addresses.eth) ? [ethTokenEntity] : []),
+      ...(utils.isAddress(token.addresses.bsc) ? [bscTokenEntity] : []),
     ];
   }, []);
+
+const formatPrimaryNets = (primaryNets) =>
+  primaryNets.map((net) => allNetworks[net].chainId);
 
 export default formatTokenListFromConfig;
