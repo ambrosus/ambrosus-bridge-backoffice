@@ -76,8 +76,8 @@
       "chainId": 56,
       "code": "BSC",
       "explorerUrl": "https://bscscan.com/",
-      "rpcUrl": "https://bsc-mainnet.nodereal.io/v1/db3ccef74c03410ca2612263c1164886",
-      "rpcUrlWS": "wss://bsc-mainnet.nodereal.io/ws/v1/db3ccef74c03410ca2612263c1164886"
+      "rpcUrl": "https://bsc-mainnet.nodereal.io/v1/dda2dbba3aa94df5a313d4eb70db27fa",
+      "rpcUrlWS": "wss://bsc-mainnet.nodereal.io/ws/v1/dda2dbba3aa94df5a313d4eb70db27fa"
     }
   }
 }
