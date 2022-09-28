@@ -80,9 +80,9 @@ const Balance = () => {
             {balances[8] && (
               <TableRow>
                 <TableCell>USDC</TableCell>
-                <TableCell>{formatValue(utils.formatUnits(balances[8], 6))}</TableCell>
-                <TableCell>{formatValue(utils.formatUnits(balances[7], 6))}</TableCell>
-                <TableCell>{formatValue(utils.formatUnits(balances[9], 6))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[8], 18))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[7], 18))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[9], 18))}</TableCell>
               </TableRow>
             )}
           </TableBody>
