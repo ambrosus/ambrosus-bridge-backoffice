@@ -18,19 +18,19 @@ const Home = () => {
   const [isEthPaused, setIsEthPaused] = useState(false);
 
   useEffect(async () => {
-    // const ambContract = createBridgeContract(
-    //   '0x19caBC1E34Ab0CC5C62DaA1394f6022B38b75c78',
-    //   providers[ambChainId],
-    // );
-    // const ethContract = createBridgeContract(
-    //   '0x0De2669e8A7A6F6CC0cBD3Cf2D1EEaD89e243208',
-    //   providers[ethChainId],
-    // );
-    // const ambPaused = await ambContract.paused();
-    // const ethPaused = await ethContract.paused();
+    const ambContract = createBridgeContract(
+      bridges[ethChainId].native,
+      providers[ambChainId],
+    );
+    const ethContract = createBridgeContract(
+      bridges[ethChainId].foreign,
+      providers[ethChainId],
+    );
+    const ambPaused = await ambContract.paused();
+    const ethPaused = await ethContract.paused();
 
-    setIsAmbPaused(false);
-    setIsEthPaused(false);
+    setIsAmbPaused(ambPaused);
+    setIsEthPaused(ethPaused);
   }, []);
 
   useEffect(() => {
