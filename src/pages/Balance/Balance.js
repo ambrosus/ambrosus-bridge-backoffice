@@ -27,15 +27,18 @@ const Balance = () => {
     const wbnbInBnb = getTokenBalance(providers[bscChainId], getTokenAddress('WBNB', bscChainId), bridges[bscChainId].foreign);
     const wbnbInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('WBNB', ambChainId), bridges[bscChainId].native);
 
-    Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb, sambInBnb, wbnbInBnb, wbnbInAmb])
+    const usdcInEth = getTokenBalance(providers[ethChainId], getTokenAddress('USDC', ethChainId), bridges[ethChainId].foreign);
+    const usdcInAmb = getTokenBalance(providers[ambChainId], getTokenAddress('USDC', ambChainId), bridges[ethChainId].native);
+    const usdcInBnb = getTokenBalance(providers[bscChainId], getTokenAddress('USDC', bscChainId), bridges[bscChainId].foreign);
+
+    Promise.all([sambInEth, wethInEth, sambInAmb, wethInAmb, sambInBnb, wbnbInBnb, wbnbInAmb, usdcInEth, usdcInAmb, usdcInBnb])
       .then((res) => {
-        console.log(res);
         setBalances(res);
       });
   };
 
   const getTokenAddress = (symbol, chainId) => {
-    return tokens.find((token) => token.symbol === symbol && token.chainId === chainId).address;
+    return tokens.find((token) => token.symbol === symbol && token.chainId === chainId)?.address;
   };
 
   return balances && (
@@ -50,24 +53,38 @@ const Balance = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell>sAMB</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[2], 18))}</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[0], 18))}</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[4], 18))}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>wETH</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[3], 18))}</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[1], 18))}</TableCell>
-              <TableCell>-</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>wBNB</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[6], 18))}</TableCell>
-              <TableCell>-</TableCell>
-              <TableCell>{formatValue(utils.formatUnits(balances[5], 18))}</TableCell>
-            </TableRow>
+            {balances[2] && (
+              <TableRow>
+                <TableCell>sAMB</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[2], 18))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[0], 18))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[4], 18))}</TableCell>
+              </TableRow>
+            )}
+            {balances[3] && (
+              <TableRow>
+                <TableCell>wETH</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[3], 18))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[1], 18))}</TableCell>
+                <TableCell>-</TableCell>
+              </TableRow>
+            )}
+            {balances[5] && (
+              <TableRow>
+                <TableCell>wBNB</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[6], 18))}</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[5], 18))}</TableCell>
+              </TableRow>
+            )}
+            {balances[8] && (
+              <TableRow>
+                <TableCell>USDC</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[8], 6))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[7], 6))}</TableCell>
+                <TableCell>{formatValue(utils.formatUnits(balances[9], 6))}</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
