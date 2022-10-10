@@ -1,5 +1,9 @@
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import providers, {ambChainId, bscChainId, ethChainId} from '../../utils/providers';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import providers, {
+  ambChainId,
+  bscChainId,
+  ethChainId,
+} from '../../utils/providers';
 import { createBridgeContract } from '../../utils/contracts';
 import {
   Button,
@@ -10,16 +14,19 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import FeesItem from './components/FeesItem';
 import TabPanel from '../Home/components/TabPanel';
-import {BigNumber, utils} from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import ConfigContext from '../../context/ConfigContext/context';
-import {getNetFromAddress} from '../../utils/getNetFromAddress';
-import {getDestinationNet} from '../../utils/getDestinationNet';
-import {getNetworkByChainId} from '../../utils/networks';
+import { getNetFromAddress } from '../../utils/getNetFromAddress';
+import { getDestinationNet } from '../../utils/getDestinationNet';
+import { getNetworkByChainId } from '../../utils/networks';
 import getEventsFromContract from '../../utils/getEventsFromContract';
+import getAmbTokenPrice from '../../utils/getAmbTokenPrice';
+import axios from 'axios';
+import getSymbolPriceBinance from '../../utils/getSymbolPriceBinance';
 
 const itemsPerPage = 10;
 
@@ -43,23 +50,40 @@ const Fees = () => {
       label: 'Bsc/Amb',
       address: bridges[bscChainId].foreign,
     },
-  ]
+  ];
 
   const [txs, setTxs] = useState([]);
   const [chainId, setChainId] = useState(bridges[ethChainId].native);
   const [selectedTxs, setSelectedTxs] = useState(null);
   const [ambPrice, setAmbPrice] = useState(null);
 
+  console.log(selectedTxs);
+
   const allTxs = useRef([]);
 
-  useEffect(() => {
-    fetch('https://token.ambrosus.io/price')
-      .then((response) => response.json())
-      .then(({ data }) => {
-        // setAmbPrice(BigNumber.from(
-        //   utils.parseUnits(data.total_price_usd.toString(), 18),
-        // ))
-      });
+  // useEffect(() => {
+  //   fetch('https://token.ambrosus.io/price')
+  //     .then((response) => response.json())
+  //     .then(({ data }) => {
+  //       // setAmbPrice(BigNumber.from(
+  //       //   utils.parseUnits(data.total_price_usd.toString(), 18),
+  //       // ))
+  //     });
+  // }, []);
+
+  useEffect(async () => {
+    const data = await getAmbTokenPrice();
+    setAmbPrice(data.total_price_usd);
+  }, []);
+
+  const option = { symbol: 'ETHUSDT' };
+
+  useEffect(async () => {
+    const res = await axios.get(
+      'https://api3.binance.com/api/v3/ticker/price',
+      { params: { symbol: 'ETHUSDT' } },
+    );
+    console.log(res);
   }, []);
 
   useEffect(() => {
@@ -67,7 +91,7 @@ const Fees = () => {
     const contract = createBridgeContract(chainId, provider);
     setTxs([]);
     setSelectedTxs(null);
-    
+
     getEventsFromContract(contract, contract.filters.Withdraw())
       .then((res) => mapTxsArray(res.reverse()))
       .catch((e) => console.log(e));
@@ -90,11 +114,11 @@ const Fees = () => {
       const pack = arr.find((pack) => pack.eventId === eventId);
 
       if (!pack) {
-        arr.push({ eventId, txs: [el] })
+        arr.push({ eventId, txs: [el] });
       } else {
         pack.txs.push(el);
       }
-    })
+    });
     allTxs.current = arr;
     handlePage(null, 1);
   };
@@ -106,16 +130,19 @@ const Fees = () => {
     const itemsInPage = allTxs.current.slice(fromIdx, fromIdx + itemsPerPage);
 
     setTxs(itemsInPage);
-  }
+  };
 
-  const tableHeads = useMemo(() => [
-    'Event Id',
-    `${getNetworkByChainId(+getNetFromAddress(chainId, bridges)).code} Fee`,
-    `${getNetworkByChainId(+getDestinationNet(chainId, bridges)).code} Fee`,
-    'Status'
-  ], [chainId]);
+  const tableHeads = useMemo(
+    () => [
+      'Event Id',
+      `${getNetworkByChainId(+getNetFromAddress(chainId, bridges)).code} Fee`,
+      `${getNetworkByChainId(+getDestinationNet(chainId, bridges)).code} Fee`,
+      'Status',
+    ],
+    [chainId],
+  );
 
-  const pages = Math.ceil(allTxs.current.length / 10)
+  const pages = Math.ceil(allTxs.current.length / 10);
 
   return (
     <div className="fees-page">
@@ -152,12 +179,10 @@ const Fees = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination count={pages} onChange={handlePage}/>
-      {selectedTxs && (
-        <TabPanel txs={selectedTxs.txs}/>
-      )}
+      <Pagination count={pages} onChange={handlePage} />
+      {selectedTxs && <TabPanel txs={selectedTxs.txs} />}
     </div>
-  )
+  );
 };
 
 export default Fees;
