@@ -94,10 +94,14 @@ const FeesItem = ({
         <span style={{ color: '#008000' }}>{`(${leftUsd}$)`}</span>
       </TableCell>
       <TableCell>
-        {otherFee === 0
-          ? 'loading'
-          : `${formatAmount(utils.formatUnits(otherFee, 18))} `}{' '}
-        <span style={{ color: '#008000' }}>{`(${rightUsd}$)`}</span>
+        {otherFee === 0 ? (
+          'loading'
+        ) : (
+          <>
+            {`${formatAmount(utils.formatUnits(otherFee, 18))}`}
+            <span style={{ color: '#008000' }}>{` (${rightUsd}$)`}</span>
+          </>
+        )}
       </TableCell>
       <TableCell>{isSuccess ? 'Success' : 'Pending'}</TableCell>
     </TableRow>
