@@ -56,7 +56,8 @@ const Fees = () => {
   const [chainId, setChainId] = useState(bridges[ethChainId].native);
   const [selectedTxs, setSelectedTxs] = useState(null);
   const [ambPrice, setAmbPrice] = useState(null);
-  const [tab, setTab] = useState(null);
+  const [tokenPrice, setTokenPrice] = useState(null);
+  const [tab, setTab] = useState(['Amb', 'Eth']);
 
   const allTxs = useRef([]);
 
@@ -70,18 +71,9 @@ const Fees = () => {
   //     });
   // }, []);
 
-  const setTokenPrice = () => {};
-
   useEffect(async () => {
     const data = await getAmbTokenPrice();
     setAmbPrice(data.total_price_usd);
-  }, []);
-
-  useEffect(async () => {
-    const option = { symbol: 'BNBUSDT' };
-    const { data } = await getSymbolPriceBinance(option);
-
-    console.log(data);
   }, []);
 
   useEffect(() => {
@@ -140,9 +132,20 @@ const Fees = () => {
     [chainId],
   );
 
-  if (tab) {
-    console.log(tab.split('/'));
-  }
+  const isEthToken = tab?.includes('Eth');
+  const isLeftUsdValue = tab[0] === 'Amb';
+
+  const usdValue = {
+    leftUsd: isLeftUsdValue ? ambPrice : tokenPrice,
+    rightUsd: isLeftUsdValue ? tokenPrice : ambPrice,
+  };
+
+  useEffect(async () => {
+    const token = isEthToken ? 'ETHUSDT' : 'BNBUSDT';
+    const option = { symbol: token };
+    const { data } = await getSymbolPriceBinance(option);
+    setTokenPrice(data.price);
+  }, [chainId]);
 
   const pages = Math.ceil(allTxs.current.length / 10);
 
@@ -154,7 +157,7 @@ const Fees = () => {
           variant="outlined"
           onClick={() => {
             setChainId(el.address);
-            setTab(el.label);
+            setTab(el.label.split('/'));
           }}
           key={el.address}
         >
@@ -173,7 +176,7 @@ const Fees = () => {
           <TableBody>
             {txs.map((el) => (
               <FeesItem
-                ambPrice={ambPrice}
+                usdValue={usdValue}
                 contractAddress={chainId}
                 key={el.eventId}
                 item={el}

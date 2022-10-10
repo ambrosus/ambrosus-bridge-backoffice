@@ -13,7 +13,7 @@ const FeesItem = ({
   handleSelectedTxs,
   isOpen,
   contractAddress,
-  ambPrice,
+  usdValue,
 }) => {
   const { bridges } = useContext(ConfigContext);
   const [isSuccess, setIsSuccess] = useState(true);
@@ -67,6 +67,22 @@ const FeesItem = ({
 
   const handleTxOpen = () => handleSelectedTxs(item);
 
+  const leftUsd = useMemo(
+    () =>
+      (
+        +formatAmount(utils.formatUnits(currentFee, 18)) * +usdValue.leftUsd
+      ).toFixed(2),
+    [usdValue.leftUsd],
+  );
+
+  const rightUsd = useMemo(
+    () =>
+      (
+        +formatAmount(utils.formatUnits(otherFee, 18)) * +usdValue.rightUsd
+      ).toFixed(2),
+    [usdValue.rightUsd],
+  );
+
   return (
     <TableRow
       sx={{ background: isOpen ? '#e2e2e2' : 'white' }}
@@ -74,14 +90,14 @@ const FeesItem = ({
     >
       <TableCell>#{item.eventId}</TableCell>
       <TableCell>
-        {`${formatAmount(utils.formatUnits(currentFee, 18))} 50$`}
+        {`${formatAmount(utils.formatUnits(currentFee, 18))} `}
+        <span style={{ color: '#008000' }}>{`(${leftUsd}$)`}</span>
       </TableCell>
       <TableCell>
-        {`${
-          otherFee === 0
-            ? 'loading'
-            : formatAmount(utils.formatUnits(otherFee, 18))
-        } 60$`}
+        {otherFee === 0
+          ? 'loading'
+          : `${formatAmount(utils.formatUnits(otherFee, 18))} `}{' '}
+        <span style={{ color: '#008000' }}>{`(${rightUsd}$)`}</span>
       </TableCell>
       <TableCell>{isSuccess ? 'Success' : 'Pending'}</TableCell>
     </TableRow>
