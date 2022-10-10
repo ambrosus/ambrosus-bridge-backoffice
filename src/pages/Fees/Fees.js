@@ -56,8 +56,7 @@ const Fees = () => {
   const [chainId, setChainId] = useState(bridges[ethChainId].native);
   const [selectedTxs, setSelectedTxs] = useState(null);
   const [ambPrice, setAmbPrice] = useState(null);
-
-  console.log(selectedTxs);
+  const [tab, setTab] = useState(null);
 
   const allTxs = useRef([]);
 
@@ -71,19 +70,18 @@ const Fees = () => {
   //     });
   // }, []);
 
+  const setTokenPrice = () => {};
+
   useEffect(async () => {
     const data = await getAmbTokenPrice();
     setAmbPrice(data.total_price_usd);
   }, []);
 
-  const option = { symbol: 'ETHUSDT' };
-
   useEffect(async () => {
-    const res = await axios.get(
-      'https://api3.binance.com/api/v3/ticker/price',
-      { params: { symbol: 'ETHUSDT' } },
-    );
-    console.log(res);
+    const option = { symbol: 'BNBUSDT' };
+    const { data } = await getSymbolPriceBinance(option);
+
+    console.log(data);
   }, []);
 
   useEffect(() => {
@@ -142,6 +140,10 @@ const Fees = () => {
     [chainId],
   );
 
+  if (tab) {
+    console.log(tab.split('/'));
+  }
+
   const pages = Math.ceil(allTxs.current.length / 10);
 
   return (
@@ -150,7 +152,10 @@ const Fees = () => {
         <Button
           sx={{ margin: '20px' }}
           variant="outlined"
-          onClick={() => setChainId(el.address)}
+          onClick={() => {
+            setChainId(el.address);
+            setTab(el.label);
+          }}
           key={el.address}
         >
           {el.label}

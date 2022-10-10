@@ -4,7 +4,7 @@ import axios from 'axios';
 const binanceApiUrl = process.env.REACT_APP_BINANCE_API;
 
 const getSymbolPriceBinance = async (option) => {
-  const data = await axios.get(`${binanceApiUrl}/price`, { params: option });
+  return await axios.get(`${binanceApiUrl}`, { params: option });
 };
 
 export default getSymbolPriceBinance;
