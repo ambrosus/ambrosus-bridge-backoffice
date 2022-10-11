@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import providers, {
-  ambChainId,
   bscChainId,
   ethChainId,
 } from '../../utils/providers';
@@ -18,14 +17,12 @@ import {
 } from '@mui/material';
 import FeesItem from './components/FeesItem';
 import TabPanel from '../Home/components/TabPanel';
-import { BigNumber, utils } from 'ethers';
 import ConfigContext from '../../context/ConfigContext/context';
 import { getNetFromAddress } from '../../utils/getNetFromAddress';
 import { getDestinationNet } from '../../utils/getDestinationNet';
 import { getNetworkByChainId } from '../../utils/networks';
 import getEventsFromContract from '../../utils/getEventsFromContract';
 import getAmbTokenPrice from '../../utils/getAmbTokenPrice';
-import axios from 'axios';
 import getSymbolPriceBinance from '../../utils/getSymbolPriceBinance';
 
 const itemsPerPage = 10;
@@ -153,7 +150,8 @@ const Fees = () => {
     <div className="fees-page">
       {contractAddresses.map((el) => (
         <Button
-          sx={{ margin: '20px' }}
+          selecter={true}
+          sx={{ margin: '20px', background: el.address === chainId ? '#e4f2ff' : 'transparent' }}
           variant="outlined"
           onClick={() => {
             setChainId(el.address);
