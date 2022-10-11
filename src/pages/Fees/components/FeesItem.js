@@ -80,8 +80,9 @@ const FeesItem = ({
       (
         +formatAmount(utils.formatUnits(otherFee, 18)) * +usdValue.rightUsd
       ).toFixed(2),
-    [usdValue.rightUsd],
+    [otherFee],
   );
+  console.log(usdValue.rightUsd);
 
   return (
     <TableRow
