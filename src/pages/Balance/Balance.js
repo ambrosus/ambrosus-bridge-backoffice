@@ -105,6 +105,7 @@ const Balance = () => {
   };
 
   const getTokenAddress = (symbol, chainId) => {
+    console.log(tokens);
     return tokens.find(
       (token) => token.symbol === symbol && token.chainId === chainId,
     )?.address;
@@ -165,13 +166,13 @@ const Balance = () => {
                 <TableRow>
                   <TableCell>USDC</TableCell>
                   <TableCell>
-                    {formatValue(utils.formatUnits(balances[8], 18))}
+                    {formatValue(utils.formatUnits(balances[8], 6))}
                   </TableCell>
                   <TableCell>
-                    {formatValue(utils.formatUnits(balances[7], 18))}
+                    {formatValue(utils.formatUnits(balances[7], 6))}
                   </TableCell>
                   <TableCell>
-                    {formatValue(utils.formatUnits(balances[9], 18))}
+                    {formatValue(utils.formatUnits(balances[9], 6))}
                   </TableCell>
                 </TableRow>
               )}
