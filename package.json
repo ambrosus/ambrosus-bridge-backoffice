@@ -5,10 +5,12 @@
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@inc4/prettier-config": "inc4/prettier-config",
     "@mui/material": "^5.6.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "axios": "^1.1.2",
     "buffer": "^6.0.3",
     "eth-sig-util": "^3.0.1",
     "ethers": "^5.6.4",
@@ -49,6 +51,6 @@
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^2.5.1",
-    "prettier": "^2.3.2"
+    "prettier": "2.7.1"
   }
 }

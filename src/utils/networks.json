@@ -15,8 +15,8 @@
       "logo": "https://ethereum.org/static/bfc04ac72981166c740b189463e1f74c/448ee/eth-diamond-black-white.webp",
       "code": "ETH",
       "explorerUrl": "https://ropsten.etherscan.io/",
-      "rpcUrl": "https://sepolia.infura.io/v3/",
-      "rpcUrlWS": "wss://sepolia.infura.io/ws/v3/"
+      "rpcUrl": "https://ropsten.infura.io/v3/",
+      "rpcUrlWS": "wss://ropsten.infura.io/ws/v3/"
     },
     "bsc": {
       "name": "Smart Chain - Testnet",
@@ -42,8 +42,8 @@
       "logo": "https://ethereum.org/static/bfc04ac72981166c740b189463e1f74c/448ee/eth-diamond-black-white.webp",
       "code": "ETH",
       "explorerUrl": "https://ropsten.etherscan.io/",
-      "rpcUrl": "https://sepolia.infura.io/v3/",
-      "rpcUrlWS": "wss://sepolia.infura.io/ws/v3/"
+      "rpcUrl": "https://ropsten.infura.io/v3/",
+      "rpcUrlWS": "wss://ropsten.infura.io/ws/v3/"
     },
     "bsc": {
       "name": "Smart Chain - Testnet",
@@ -76,8 +76,8 @@
       "chainId": 56,
       "code": "BSC",
       "explorerUrl": "https://bscscan.com/",
-      "rpcUrl": "https://bsc-mainnet.nodereal.io/v1/db3ccef74c03410ca2612263c1164886",
-      "rpcUrlWS": "wss://bsc-mainnet.nodereal.io/ws/v1/db3ccef74c03410ca2612263c1164886"
+      "rpcUrl": "https://bsc-mainnet.nodereal.io/v1/dda2dbba3aa94df5a313d4eb70db27fa",
+      "rpcUrlWS": "wss://bsc-mainnet.nodereal.io/ws/v1/dda2dbba3aa94df5a313d4eb70db27fa"
     }
   }
 }
