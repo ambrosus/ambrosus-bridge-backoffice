@@ -8,4 +8,9 @@
   text-align: right;
   right: 5px;
   top: 5px;
+  display: flex;
+
+  div {
+    margin-right: 10px;
+  }
 }

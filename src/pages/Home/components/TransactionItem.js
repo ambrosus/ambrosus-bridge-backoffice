@@ -81,7 +81,7 @@ const TransactionItem = ({item}) => {
         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
       >
         <TableCell>
-          <a href={`https://explorer.ambrosus.io/address/${item.from}`} target="_blank">
+          <a href={`https://testnet.airdao.io/explorer/addresses/${item.from}`} target="_blank">
             {item.from}
           </a>
         </TableCell>

@@ -14,23 +14,37 @@ const Home = () => {
 
   const [currentChainAddress, setCurrentChainAddress] = useState(bridges[ethChainId].native);
   const [transactions, setTransactions] = useState([]);
-  const [isAmbPaused, setIsAmbPaused] = useState(false);
-  const [isEthPaused, setIsEthPaused] = useState(false);
+  const [isAmbEthPaused, setIsAmbEthPaused] = useState(false);
+  const [isEthAmbPaused, setIsEthAmbPaused] = useState(false);
+  const [isEthBscPaused, setIsAmbBscPaused] = useState(false);
+  const [isBscAmbPaused, setIsBscAmbPaused] = useState(false);
 
   useEffect(async () => {
-    const ambContract = createBridgeContract(
+    const ambEthContract = createBridgeContract(
       bridges[ethChainId].native,
       providers[ambChainId],
     );
-    const ethContract = createBridgeContract(
+    const ethAmbContract = createBridgeContract(
       bridges[ethChainId].foreign,
       providers[ethChainId],
     );
-    const ambPaused = await ambContract.paused();
-    const ethPaused = await ethContract.paused();
+    const ambBscContract = createBridgeContract(
+      bridges[bscChainId].native,
+      providers[ambChainId],
+    );
+    const bscAmbContract = createBridgeContract(
+      bridges[bscChainId].foreign,
+      providers[bscChainId],
+    );
+    const ambEthPaused = await ambEthContract.paused();
+    const ethAmbPaused = await ethAmbContract.paused();
+    const ambBscPaused = await ambBscContract.paused();
+    const bscAmbPaused = await bscAmbContract.paused();
 
-    setIsAmbPaused(ambPaused);
-    setIsEthPaused(ethPaused);
+    setIsAmbEthPaused(ambEthPaused);
+    setIsEthAmbPaused(ethAmbPaused);
+    setIsAmbBscPaused(ambBscPaused);
+    setIsBscAmbPaused(bscAmbPaused);
   }, []);
 
   useEffect(() => {
@@ -63,8 +77,14 @@ const Home = () => {
         <Tab label="Fees" value={99} />
       </Tabs>
       <div className="paused-networks">
-        <p>Eth status: {isEthPaused ? 'Paused' : 'Working'}</p>
-        <p>Amb status: {isAmbPaused ? 'Paused' : 'Working'}</p>
+        <div>
+          <p>Eth/Amb status: {isEthAmbPaused ? 'Paused' : 'Working'}</p>
+          <p>Amb/Eth status: {isAmbEthPaused ? 'Paused' : 'Working'}</p>
+        </div>
+        <div>
+          <p>Bsc/Amb status: {isEthBscPaused ? 'Paused' : 'Working'}</p>
+          <p>Amb/Bsc status: {isBscAmbPaused ? 'Paused' : 'Working'}</p>
+        </div>
       </div>
       {currentChainAddress === 99 && (
         <Fees />
