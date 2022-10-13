@@ -24,6 +24,7 @@ import { getNetworkByChainId } from '../../utils/networks';
 import getEventsFromContract from '../../utils/getEventsFromContract';
 import getAmbTokenPrice from '../../utils/getAmbTokenPrice';
 import getSymbolPriceBinance from '../../utils/getSymbolPriceBinance';
+import API from '../../api/api';
 
 const itemsPerPage = 10;
 
@@ -70,7 +71,7 @@ const Fees = () => {
 
   useEffect(async () => {
     const data = await getAmbTokenPrice();
-    setAmbPrice(data.total_price_usd);
+    setAmbPrice(data.price_usd);
   }, []);
 
   useEffect(() => {
