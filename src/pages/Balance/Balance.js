@@ -5,7 +5,7 @@ import providers, {
   bscChainId,
   ethChainId,
 } from '../../utils/providers';
-import { utils } from 'ethers';
+import {ethers, utils} from 'ethers';
 import {
   Paper,
   Table,
@@ -17,12 +17,13 @@ import {
 } from '@mui/material';
 import ConfigContext from '../../context/ConfigContext/context';
 import formatValue from '../../utils/formatAmount';
+import ABI from '../../utils/balanceAbi.json';
 
 const tableHeads = [
-  'Token name',
-  'Ambrosus',
-  'Ethereum',
-  'Binance Smart Chain',
+  '',
+  'AMB',
+  'ETH',
+  'BSC',
 ];
 
 const Balance = () => {
@@ -35,77 +36,38 @@ const Balance = () => {
   }, []);
 
   const handleBalances = async () => {
-    const sambInEth = getTokenBalance(
-      providers[ethChainId],
-      getTokenAddress('SAMB', ethChainId),
-      bridges[ethChainId].foreign,
-    );
-    const wethInEth = getTokenBalance(
-      providers[ethChainId],
-      getTokenAddress('WETH', ethChainId),
-      bridges[ethChainId].foreign,
-    );
-    const sambInAmb = getTokenBalance(
-      providers[ambChainId],
-      getTokenAddress('SAMB', ambChainId),
-      bridges[ethChainId].native,
-    );
-    const wethInAmb = getTokenBalance(
-      providers[ambChainId],
-      getTokenAddress('WETH', ambChainId),
-      bridges[ethChainId].native,
-    );
+    const sAMBOnAMB = new ethers.Contract(getTokenAddress('SAMB', ambChainId), ABI, providers[ambChainId]);
+    const sAMBOnETHLocked = sAMBOnAMB.balanceOf(bridges[ethChainId].native);
+    const sAMBOnBSCLocked = sAMBOnAMB.balanceOf(bridges[bscChainId].native);
+    const sAMBOnETH = new ethers.Contract(getTokenAddress('SAMB', ethChainId), ABI, providers[ethChainId]);
+    const sAMBOnBSC = new ethers.Contract(getTokenAddress('SAMB', bscChainId), ABI, providers[bscChainId]);
+    const sAMBOnETHSupplied = sAMBOnETH.totalSupply();
+    const sAMBOnBSCSupplied = sAMBOnBSC.totalSupply();
 
-    const sambInBnb = getTokenBalance(
-      providers[bscChainId],
-      getTokenAddress('SAMB', bscChainId),
-      bridges[bscChainId].foreign,
-    );
-    const wbnbInBnb = getTokenBalance(
-      providers[bscChainId],
-      getTokenAddress('WBNB', bscChainId),
-      bridges[bscChainId].foreign,
-    );
-    const wbnbInAmb = getTokenBalance(
-      providers[ambChainId],
-      getTokenAddress('WBNB', ambChainId),
-      bridges[bscChainId].native,
-    );
-
-    const usdcInEth = getTokenBalance(
-      providers[ethChainId],
-      getTokenAddress('USDC', ethChainId),
-      bridges[ethChainId].foreign,
-    );
-    const usdcInAmb = getTokenBalance(
-      providers[ambChainId],
-      getTokenAddress('USDC', ambChainId),
-      bridges[ethChainId].native,
-    );
-    const usdcInBnb = getTokenBalance(
-      providers[bscChainId],
-      getTokenAddress('USDC', bscChainId),
-      bridges[bscChainId].foreign,
-    );
+    const USDCOnETH = new ethers.Contract(getTokenAddress('USDC', ethChainId), ABI, providers[ethChainId]);
+    const USDCOnEthLocked = USDCOnETH.balanceOf(bridges[ethChainId].foreign);
+    const USDCOnBSC = new ethers.Contract(getTokenAddress('USDC', bscChainId), ABI, providers[bscChainId]);
+    const USDCOnBSCLocked = USDCOnBSC.balanceOf(bridges[bscChainId].foreign);
+    const USDCOnAMB = new ethers.Contract(getTokenAddress('USDC', ambChainId), ABI, providers[ambChainId]);
+    const USDCOnAMBETHThinkLocked = USDCOnAMB.bridgeBalances(bridges[ethChainId].native);
+    const USDCOnAMBBSCThinkLocked = USDCOnAMB.bridgeBalances(bridges[bscChainId].native);
 
     Promise.all([
-      sambInEth,
-      wethInEth,
-      sambInAmb,
-      wethInAmb,
-      sambInBnb,
-      wbnbInBnb,
-      wbnbInAmb,
-      usdcInEth,
-      usdcInAmb,
-      usdcInBnb,
+      sAMBOnETHLocked,
+      sAMBOnBSCLocked,
+      sAMBOnETHSupplied,
+      sAMBOnBSCSupplied,
+      USDCOnEthLocked,
+      USDCOnBSCLocked,
+      USDCOnAMBETHThinkLocked,
+      USDCOnAMBBSCThinkLocked,
     ]).then((res) => {
       setBalances(res);
+      console.log(res);
     });
   };
 
   const getTokenAddress = (symbol, chainId) => {
-    console.log(tokens);
     return tokens.find(
       (token) => token.symbol === symbol && token.chainId === chainId,
     )?.address;
@@ -124,58 +86,32 @@ const Balance = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {balances[2] && (
-                <TableRow>
-                  <TableCell>sAMB</TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[2], 18))}
-                  </TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[0], 18))}
-                  </TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[4], 18))}
-                  </TableCell>
-                </TableRow>
-              )}
-              {balances[3] && (
-                <TableRow>
-                  <TableCell>wETH</TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[3], 18))}
-                  </TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[1], 18))}
-                  </TableCell>
-                  <TableCell>-</TableCell>
-                </TableRow>
-              )}
-              {balances[5] && (
-                <TableRow>
-                  <TableCell>wBNB</TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[6], 18))}
-                  </TableCell>
-                  <TableCell>-</TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[5], 18))}
-                  </TableCell>
-                </TableRow>
-              )}
-              {balances[8] && (
-                <TableRow>
-                  <TableCell>USDC</TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[8], 6))}
-                  </TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[7], 6))}
-                  </TableCell>
-                  <TableCell>
-                    {formatValue(utils.formatUnits(balances[9], 6))}
-                  </TableCell>
-                </TableRow>
-              )}
+              <TableRow>
+                <TableCell>sAMB</TableCell>
+                <TableCell>
+                -
+                </TableCell>
+                <TableCell>
+                  {formatValue(utils.formatUnits(balances[0], 18))}
+                  /
+                  {formatValue(utils.formatUnits(balances[2], 18))}
+                </TableCell>
+                <TableCell>
+                  {formatValue(utils.formatUnits(balances[1], 18))}
+                  /
+                  {formatValue(utils.formatUnits(balances[3], 18))}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>USDC</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>
+                  {formatValue(utils.formatUnits(balances[5], 18))}
+                  /
+                  {formatValue(utils.formatUnits(balances[7], 18))}
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>

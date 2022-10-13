@@ -52,10 +52,4 @@ const providers = {
   [bscChainId]: bscProvider,
 };
 
-export const batchProviders = {
-  [ethChainId]: ethBatchProvider,
-  [ambChainId]: ambBatchProvider,
-  [bscChainId]: bscBatchProvider,
-};
-
 export default providers;
