@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
-import {ambChainId, ethChainId} from '../../../utils/providers';
+import {ambChainId, bscChainId, ethChainId} from '../../../utils/providers';
 import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
 import { utils } from 'ethers';
 import Status from './Status';
@@ -74,6 +74,16 @@ const TransactionItem = ({item}) => {
     return explorerLink ? `${explorerLink.explorerUrl}tx/${hash}` : null;
   };
 
+  const denomination = transferredTokens.from === 'USDC' ? 6 : currentToken.denomination
+
+  let explorerLink = 'https://testnet.airdao.io/explorer/addresses/';
+
+  if (item.chainId === ethChainId) {
+    explorerLink = 'https://sepolia.etherscan.io/address/';
+  } else if (item.chainId === bscChainId) {
+    explorerLink = 'https://bscscan.com/address/'
+  }
+
   return (
     <>
       <TableRow
@@ -81,7 +91,7 @@ const TransactionItem = ({item}) => {
         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
       >
         <TableCell>
-          <a href={`https://testnet.airdao.io/explorer/addresses/${item.from}`} target="_blank">
+          <a href={`${explorerLink}${item.from}`} target="_blank">
             {item.from}
           </a>
         </TableCell>
@@ -98,10 +108,10 @@ const TransactionItem = ({item}) => {
         </TableCell>
         <TableCell>{item.args.eventId.toNumber()}</TableCell>
         <TableCell>
-          {utils.formatUnits(item.args.amount, currentToken.denomination)}
+          {utils.formatUnits(item.args.amount, denomination)}
         </TableCell>
         <TableCell>
-          {utils.formatUnits(item.args['transferFeeAmount'].add(item.args['bridgeFeeAmount']), currentToken.denomination)}
+          {utils.formatUnits(item.args['transferFeeAmount'].add(item.args['bridgeFeeAmount']), denomination)}
         </TableCell>
         <TableCell>{formatDate(item.timestamp)}</TableCell>
         <TableCell>
