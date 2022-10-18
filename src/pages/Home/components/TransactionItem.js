@@ -73,20 +73,20 @@ const TransactionItem = ({item}) => {
     const currentToken = tokens.find((el) => el.address === tokenAddress);
     const networksIds = [+getDestinationNet(item.to, bridges), item.chainId];
     if (networksIds.includes(bscChainId)) {
-      console.log(currentToken.decimals.bsc);
       return currentToken.decimals.bsc;
     } else {
-      console.log(currentToken.decimals.eth);
       return currentToken.decimals.eth;
     }
   }, [item, tokens]);
 
-  let explorerLink = 'https://testnet.airdao.io/explorer/addresses/';
+  const explorer = useMemo(() => Object.values(allNetworks).find(
+    (el) => el.chainId === item.chainId,
+  ).explorerUrl);
 
-  if (item.chainId === ethChainId) {
-    explorerLink = 'https://sepolia.etherscan.io/address/';
-  } else if (item.chainId === bscChainId) {
-    explorerLink = 'https://bscscan.com/address/'
+  let explorerLink = `${explorer}address/`
+
+  if (item.chainId === ambChainId) {
+    explorerLink = `${explorer}addresses/`;
   }
 
   return (
