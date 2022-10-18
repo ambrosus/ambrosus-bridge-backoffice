@@ -71,13 +71,14 @@ const TransactionItem = ({item}) => {
       : item.args.tokenFrom;
 
     const currentToken = tokens.find((el) => el.address === tokenAddress);
-
-    if (item.chainId === ethChainId) {
-      return currentToken.decimals.eth;
-    } else {
+    const networksIds = [+getDestinationNet(item.to, bridges), item.chainId];
+    if (networksIds.includes(bscChainId)) {
+      console.log(currentToken.decimals.bsc);
       return currentToken.decimals.bsc;
+    } else {
+      console.log(currentToken.decimals.eth);
+      return currentToken.decimals.eth;
     }
-    return 18;
   }, [item, tokens]);
 
   let explorerLink = 'https://testnet.airdao.io/explorer/addresses/';
@@ -115,7 +116,7 @@ const TransactionItem = ({item}) => {
           {utils.formatUnits(item.args.amount, denomination)}
         </TableCell>
         <TableCell>
-          {utils.formatUnits(item.args['transferFeeAmount'].add(item.args['bridgeFeeAmount']), denomination)}
+          {utils.formatUnits(item.args['transferFeeAmount'].add(item.args['bridgeFeeAmount']), 18)}
         </TableCell>
         <TableCell>{formatDate(item.timestamp)}</TableCell>
         <TableCell>
