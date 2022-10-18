@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import config from '../../../utils/bridge-config.json';
 import {ambChainId, bscChainId, ethChainId} from '../../../utils/providers';
@@ -15,7 +15,6 @@ const TransactionItem = ({item}) => {
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
-  const [currentToken, setCurrentToken] = useState({});
   const [transferredTokens, setTransferredTokens] = useState({
     from: '',
     to: '',
@@ -23,17 +22,9 @@ const TransactionItem = ({item}) => {
 
   useEffect(async () => {
     const eventId = item.args.eventId;
-    const tokenAddress = item.args['tokenFrom'];
 
     setTransferredTokens(handleTransferredTokens(item.args, tokens));
 
-    const currentCoin = Object.values(config.tokens).find((token) =>
-      Object.values(token.addresses).some((el) => el && el === tokenAddress),
-    );
-
-    if (currentCoin) {
-      setCurrentToken(currentCoin);
-    }
     const destNetId = getDestinationNet(item.to, bridges);
     const otherContractAddress = Object.values(
       bridges[
@@ -74,7 +65,20 @@ const TransactionItem = ({item}) => {
     return explorerLink ? `${explorerLink.explorerUrl}tx/${hash}` : null;
   };
 
-  const denomination = transferredTokens.from === 'USDC' ? 6 : currentToken.denomination
+  const denomination = useMemo(() => {
+    const tokenAddress = item.args.tokenFrom === '0x0000000000000000000000000000000000000000'
+      ? item.args.tokenTo
+      : item.args.tokenFrom;
+
+    const currentToken = tokens.find((el) => el.address === tokenAddress);
+
+    if (item.chainId === ethChainId) {
+      return currentToken.decimals.eth;
+    } else {
+      return currentToken.decimals.bsc;
+    }
+    return 18;
+  }, [item, tokens]);
 
   let explorerLink = 'https://testnet.airdao.io/explorer/addresses/';
 
