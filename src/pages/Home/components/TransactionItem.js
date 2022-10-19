@@ -85,10 +85,6 @@ const TransactionItem = ({item}) => {
 
   let explorerLink = `${explorer}address/`
 
-  if (item.chainId === ambChainId) {
-    explorerLink = `${explorer}addresses/`;
-  }
-
   return (
     <>
       <TableRow
