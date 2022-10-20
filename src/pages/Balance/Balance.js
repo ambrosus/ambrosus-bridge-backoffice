@@ -21,7 +21,8 @@ import ABI from '../../utils/balanceAbi.json';
 
 const tableHeads = [
   '',
-  'AMB',
+  'AMB (ETH)',
+  'AMB (BSC)',
   'ETH',
   'BSC',
 ];
@@ -89,9 +90,6 @@ const Balance = () => {
               <TableRow>
                 <TableCell>sAMB</TableCell>
                 <TableCell>
-                -
-                </TableCell>
-                <TableCell>
                   {formatValue(utils.formatUnits(balances[0], 18))}
                   /
                   {formatValue(utils.formatUnits(balances[2], 18))}
@@ -101,9 +99,16 @@ const Balance = () => {
                   /
                   {formatValue(utils.formatUnits(balances[3], 18))}
                 </TableCell>
+                <TableCell>
+                  -
+                </TableCell>
+                <TableCell>
+                  -
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>USDC</TableCell>
+                <TableCell>-</TableCell>
                 <TableCell>-</TableCell>
                 <TableCell>
                   {formatValue(utils.formatUnits(balances[4], 6))}
