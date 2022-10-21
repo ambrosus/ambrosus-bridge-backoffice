@@ -8,6 +8,7 @@ import Fees from '../Fees/Fees';
 import ConfigContext from '../../context/ConfigContext/context';
 import {getNetFromAddress} from '../../utils/getNetFromAddress';
 import getEventsFromContract from '../../utils/getEventsFromContract';
+import FeesBalances from '../FeesBalances/FeesBalances';
 
 const Home = () => {
   const { bridges } = useContext(ConfigContext);
@@ -48,7 +49,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (currentChainAddress === 99 || currentChainAddress === 100) return;
+    if (Number.isInteger(currentChainAddress)) return;
     const contract = createBridgeContract(currentChainAddress, providers[getNetFromAddress(currentChainAddress, bridges)]);
     const filter = contract.filters.Withdraw();
     setTransactions([]);
@@ -75,6 +76,7 @@ const Home = () => {
         <Tab label="Bsc/Amb" value={bridges[bscChainId].foreign} />
         <Tab label="Balance" value={100} />
         <Tab label="Fees" value={99} />
+        <Tab label="Fees balances" value={98} />
       </Tabs>
       <div className="paused-networks">
         <div>
@@ -91,6 +93,9 @@ const Home = () => {
       )}
       {currentChainAddress === 100 && (
         <Balance />
+      )}
+      {currentChainAddress === 98 && (
+        <FeesBalances />
       )}
       {!Number.isInteger(currentChainAddress) && (
         <TabPanel txs={transactions} />
