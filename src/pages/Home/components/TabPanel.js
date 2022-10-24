@@ -18,23 +18,20 @@ const TabPanel = ({ txs }) => {
     handleChange(null, 1)
   }, [txs]);
 
-  const handleChange = (_, currentPage) => {
+  const handleChange = async (_, currentPage) => {
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
     const itemsInPage = txs.slice(fromIdx, fromIdx + itemsPerPage);
 
     const txsArr = [];
 
-    itemsInPage.forEach(async (el) => {
-      const { timestamp } = await el.getBlock();
+    for (let i = 0; i < itemsInPage.length; i++) {
+      const { timestamp } = await itemsInPage[i].getBlock();
 
-      await el.getTransaction().then((trans) => {
-        txsArr.push({ ...trans, timestamp, args: el.args });
-
-        if (txsArr.length === itemsInPage.length) {
-          setCurrentItems(txsArr);
-        }
+      await itemsInPage[i].getTransaction().then((trans) => {
+        txsArr.push({ ...trans, timestamp, args: itemsInPage[i].args });
       });
-    });
+    }
+    setCurrentItems(txsArr);
   };
 
   const pages = Math.ceil(txs.length / itemsPerPage)
