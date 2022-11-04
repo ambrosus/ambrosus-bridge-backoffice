@@ -45,23 +45,24 @@ const Balance = () => {
     const sAMBOnETHSupplied = sAMBOnETH.totalSupply();
     const sAMBOnBSCSupplied = sAMBOnBSC.totalSupply();
 
-    const USDCOnETH = new ethers.Contract(getTokenAddress('USDC', ethChainId), ABI, providers[ethChainId]);
-    const USDCOnEthLocked = USDCOnETH.balanceOf(bridges[ethChainId].foreign);
-    const USDCOnBSC = new ethers.Contract(getTokenAddress('USDC', bscChainId), ABI, providers[bscChainId]);
-    const USDCOnBSCLocked = USDCOnBSC.balanceOf(bridges[bscChainId].foreign);
-    const USDCOnAMB = new ethers.Contract(getTokenAddress('USDC', ambChainId), ABI, providers[ambChainId]);
-    const USDCOnAMBETHThinkLocked = USDCOnAMB.bridgeBalances(bridges[ethChainId].native);
-    const USDCOnAMBBSCThinkLocked = USDCOnAMB.bridgeBalances(bridges[bscChainId].native);
+    const USDTOnETH = new ethers.Contract(getTokenAddress('USDT', ethChainId), ABI, providers[ethChainId]);
+    const USDTOnEthLocked = USDTOnETH.balanceOf(bridges[ethChainId].foreign);
+    const USDTOnAMB = new ethers.Contract(getTokenAddress('USDT', ambChainId), ABI, providers[ambChainId]);
+    const USDTOnAMBETHThinkLocked = USDTOnAMB.bridgeBalances(bridges[ethChainId].native);
+    const BUSDOnBSC = new ethers.Contract(getTokenAddress('BUSD', bscChainId), ABI, providers[bscChainId]);
+    const BUSDOnBSCLocked = BUSDOnBSC.balanceOf(bridges[bscChainId].foreign);
+    const BUSDOnAMB = new ethers.Contract(getTokenAddress('BUSD', ambChainId), ABI, providers[ambChainId]);
+    const BUSDOnAMBETHThinkLocked = BUSDOnAMB.bridgeBalances(bridges[bscChainId].native);
 
     Promise.all([
       sAMBOnETHLocked,
       sAMBOnBSCLocked,
       sAMBOnETHSupplied,
       sAMBOnBSCSupplied,
-      USDCOnEthLocked,
-      USDCOnBSCLocked,
-      USDCOnAMBETHThinkLocked,
-      USDCOnAMBBSCThinkLocked,
+      USDTOnEthLocked,
+      USDTOnAMBETHThinkLocked,
+      BUSDOnBSCLocked,
+      BUSDOnAMBETHThinkLocked,
     ]).then((res) => {
       setBalances(res);
       console.log(res);
@@ -107,16 +108,23 @@ const Balance = () => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>USDC</TableCell>
+                <TableCell>USDT</TableCell>
                 <TableCell>-</TableCell>
                 <TableCell>-</TableCell>
                 <TableCell>
                   {formatValue(utils.formatUnits(balances[4], 6))}
                   /
-                  {formatValue(utils.formatUnits(balances[6], 18))}
-                </TableCell>
-                <TableCell>
                   {formatValue(utils.formatUnits(balances[5], 18))}
+                </TableCell>
+                <TableCell>-</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>BUSD</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>
+                  {formatValue(utils.formatUnits(balances[6], 18))}
                   /
                   {formatValue(utils.formatUnits(balances[7], 18))}
                 </TableCell>
