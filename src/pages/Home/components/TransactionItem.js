@@ -72,10 +72,11 @@ const TransactionItem = ({item}) => {
 
     const currentToken = tokens.find((el) => el.address === tokenAddress);
     const networksIds = [+getDestinationNet(item.to, bridges), item.chainId];
+
     if (networksIds.includes(bscChainId)) {
-      return currentToken.decimals.bsc;
+      return currentToken ? currentToken.decimals.bsc : 18;
     } else {
-      return currentToken.decimals.eth;
+      return currentToken ? currentToken.decimals.eth : 18;
     }
   }, [item, tokens]);
 
