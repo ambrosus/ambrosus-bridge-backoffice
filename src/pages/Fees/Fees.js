@@ -68,7 +68,7 @@ const Fees = () => {
   useEffect(() => {
     const chns = chains.split('/');
 
-    axios.get(`https://backoffice-api.ambrosus.io/backoffice?networkFrom=${chns[0]}&networkTo=${chns[1]}`)
+    axios.get(`https://backoffice-api.ambrosus-test.io/backoffice?networkFrom=${chns[0]}&networkTo=${chns[1]}`)
       .then(({ data }) => {
         mapTxsArray(data.reverse())
       });
@@ -84,7 +84,6 @@ const Fees = () => {
   };
 
   const mapTxsArray = (transactions) => {
-    console.log(transactions);
     allTxs.current = transactions;
     handlePage(null, 1);
   };
