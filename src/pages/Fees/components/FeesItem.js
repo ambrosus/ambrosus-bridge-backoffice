@@ -1,88 +1,50 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { TableCell, TableRow } from '@mui/material';
 import { BigNumber, utils } from 'ethers';
-import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
-import providers, { ambChainId, ethChainId } from '../../../utils/providers';
-import { getDestinationNet } from '../../../utils/getDestinationNet';
-import ConfigContext from '../../../context/ConfigContext/context';
-import { getNetFromAddress } from '../../../utils/getNetFromAddress';
 import formatAmount from '../../../utils/formatAmount';
+import {ambChainId, ethChainId} from '../../../utils/providers';
 
 const FeesItem = ({
   item,
   handleSelectedTxs,
   isOpen,
-  contractAddress,
-  usdValue,
+  tokensPrice,
+  chains,
 }) => {
-  const { bridges } = useContext(ConfigContext);
-  const [isSuccess, setIsSuccess] = useState(true);
-  const [otherFee, setOtherFee] = useState(0);
-
-  useEffect(async () => {
-    const destNetId = +getDestinationNet(contractAddress, bridges);
-    const chainId = getNetFromAddress(contractAddress, bridges);
-
-    const otherContractAddress = Object.values(
-      bridges[destNetId === ambChainId ? chainId : destNetId],
-    ).find((el) => el !== contractAddress);
-
-    Promise.all([
-      getTxLastStageStatus(destNetId, item.eventId, otherContractAddress),
-      getTxLastStageStatus(
-        destNetId,
-        item.eventId,
-        otherContractAddress,
-        'TransferSubmit',
-      ),
-    ]).then(([finishEvent, submitEvent]) => {
-      if (finishEvent[0]) {
-        Promise.all([
-          calculateDestNetTxFee(finishEvent[0], destNetId),
-          calculateDestNetTxFee(submitEvent[0], destNetId),
-        ]).then((response) => setOtherFee(response[0].add(response[1])));
-      } else {
-        setIsSuccess(false);
-      }
-    });
-  }, []);
-
-  const calculateDestNetTxFee = async (event, destNetId) => {
-    const txHash = event.transactionHash;
-    let sum = 0;
-
-    await Promise.all([
-      providers[destNetId].getTransactionReceipt(txHash),
-      providers[destNetId].getTransaction(txHash),
-    ]).then(([receipt, tx]) => (sum = receipt.gasUsed.mul(tx.gasPrice)));
-
-    return sum;
-  };
-
   const currentFee = useMemo(() => {
-    return item.txs.reduce((totalBalance, el) => {
-      return totalBalance.add(el.args.transferFeeAmount);
+    return item.transfers.reduce((totalBalance, el) => {
+      return totalBalance.add(BigNumber.from(el.feeTransfer.toString().includes('+') ? '0' : el.feeTransfer.toString()));
     }, BigNumber.from(0));
   }, [item]);
 
-  const handleTxOpen = () => handleSelectedTxs(item);
+  const handleTxOpen = () => {
+    const txs = item.transfers.map((tx) => ({
+      ...tx,
+      chainId: ambChainId,
+      destChainId: ethChainId,
+      eventId: item.eventId,
+      destinationTxHash: item.transferFinishTx.txHash,
+      status: item.status
+    }))
+    console.log(txs);
+    handleSelectedTxs(txs);
+  }
 
   const leftUsd = useMemo(
     () =>
       (
-        +formatAmount(utils.formatUnits(currentFee, 18)) * +usdValue.leftUsd
+        +formatAmount(utils.formatUnits(currentFee, 18)) * +tokensPrice[chains.split('/')[0] === 'amb' ? 'amb' : 'token']
       ).toFixed(2),
-    [usdValue.leftUsd],
+    [tokensPrice],
   );
 
   const rightUsd = useMemo(
     () =>
       (
-        +formatAmount(utils.formatUnits(otherFee, 18)) * +usdValue.rightUsd
+        +formatAmount(utils.formatUnits(item.gasUsedByRelay[chains.split('/')[1]]?.toString(), 18)) * +tokensPrice[chains.split('/')[1] === 'amb' ? 'amb' : 'token']
       ).toFixed(2),
-    [otherFee],
+    [tokensPrice],
   );
-  console.log(usdValue.rightUsd);
 
   return (
     <TableRow
@@ -95,16 +57,10 @@ const FeesItem = ({
         <span style={{ color: '#008000' }}>{`(${leftUsd}$)`}</span>
       </TableCell>
       <TableCell>
-        {otherFee === 0 ? (
-          'loading'
-        ) : (
-          <>
-            {`${formatAmount(utils.formatUnits(otherFee, 18))}`}
-            <span style={{ color: '#008000' }}>{` (${rightUsd}$)`}</span>
-          </>
-        )}
+        {`${formatAmount(utils.formatUnits(item.gasUsedByRelay[chains.split('/')[1]]?.toString(), 18))}`}
+        <span style={{ color: '#008000' }}>{` (${rightUsd}$)`}</span>
       </TableCell>
-      <TableCell>{isSuccess ? 'Success' : 'Pending'}</TableCell>
+      <TableCell>{item.status === 5 ? 'Success' : 'Pending'}</TableCell>
     </TableRow>
   );
 };

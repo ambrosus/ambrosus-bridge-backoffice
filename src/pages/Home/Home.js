@@ -8,11 +8,12 @@ import Fees from '../Fees/Fees';
 import ConfigContext from '../../context/ConfigContext/context';
 import {getNetFromAddress} from '../../utils/getNetFromAddress';
 import getEventsFromContract from '../../utils/getEventsFromContract';
+import axios from 'axios';
 
 const Home = () => {
   const { bridges } = useContext(ConfigContext);
 
-  const [currentChainAddress, setCurrentChainAddress] = useState(bridges[ethChainId].native);
+  const [currentTab, setCurrentTab] = useState('amb/eth');
   const [transactions, setTransactions] = useState([]);
   const [isAmbEthPaused, setIsAmbEthPaused] = useState(false);
   const [isEthAmbPaused, setIsEthAmbPaused] = useState(false);
@@ -48,33 +49,43 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (currentChainAddress === 99 || currentChainAddress === 100) return;
-    const contract = createBridgeContract(currentChainAddress, providers[getNetFromAddress(currentChainAddress, bridges)]);
-    const filter = contract.filters.Withdraw();
-    setTransactions([]);
+    if (Number.isInteger(currentTab)) return;
 
-    getEventsFromContract(contract, filter)
-      .then((res) => {
-        setTransactions(res.reverse());
-      })
-      .catch((e) => {
-        console.log(e);
-      })
-  }, [currentChainAddress]);
+    const chains = currentTab.split('/');
+
+    axios.get(`https://backoffice-api.ambrosus.io/backoffice?networkFrom=${chains[0]}&networkTo=${chains[1]}`)
+      .then(({ data }) => {
+        let txs = [];
+
+        data.forEach((el) => {
+          txs = [...txs, ...el.transfers.map((tx) => ({
+            ...tx,
+            chainId: ambChainId,
+            destChainId: ethChainId,
+            eventId: el.eventId,
+            destinationTxHash: el.transferFinishTx.txHash,
+            status: el.status
+          }))]
+        })
+
+        setTransactions(txs.reverse())
+      });
+  }, [currentTab]);
 
   const changeTab = (_, chainId) => {
-    setCurrentChainAddress(chainId);
+    setCurrentTab(chainId);
   };
 
   return (
     <div className="transactions-page">
-      <Tabs value={currentChainAddress} onChange={changeTab}>
-        <Tab label="Amb/Eth" value={bridges[ethChainId].native} />
-        <Tab label="Eth/Amb" value={bridges[ethChainId].foreign} />
-        <Tab label="Amb/Bsc" value={bridges[bscChainId].native} />
-        <Tab label="Bsc/Amb" value={bridges[bscChainId].foreign} />
+      <Tabs value={currentTab} onChange={changeTab}>
+        <Tab label="Amb/Eth" value={'amb/eth'} />
+        <Tab label="Eth/Amb" value={'eth/amb'} />
+        <Tab label="Amb/Bsc" value={'amb/bsc'} />
+        <Tab label="Bsc/Amb" value={'bsc/amb'} />
         <Tab label="Balance" value={100} />
         <Tab label="Fees" value={99} />
+        <Tab label="Fees balances" value={98} />
       </Tabs>
       <div className="paused-networks">
         <div>
@@ -86,13 +97,13 @@ const Home = () => {
           <p>Amb/Bsc status: {isBscAmbPaused ? 'Paused' : 'Working'}</p>
         </div>
       </div>
-      {currentChainAddress === 99 && (
+      {currentTab === 99 && (
         <Fees />
       )}
-      {currentChainAddress === 100 && (
+      {currentTab === 100 && (
         <Balance />
       )}
-      {!Number.isInteger(currentChainAddress) && (
+      {!Number.isInteger(currentTab) && (
         <TabPanel txs={transactions} />
       )}
     </div>

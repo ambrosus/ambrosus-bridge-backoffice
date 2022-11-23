@@ -1,19 +1,14 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
-import config from '../../../utils/bridge-config.json';
-import {ambChainId, bscChainId, ethChainId} from '../../../utils/providers';
-import getTxLastStageStatus from '../../../utils/getTxLastStageStatus';
-import { utils } from 'ethers';
-import Status from './Status';
+import {bscChainId} from '../../../utils/providers';
+import {BigNumber, utils} from 'ethers';
 import handleTransferredTokens from '../../../utils/getTransferredTokens';
 import ConfigContext from '../../../context/ConfigContext/context';
-import {getDestinationNet} from '../../../utils/getDestinationNet';
 import {allNetworks} from '../../../utils/networks';
 
 const TransactionItem = ({item}) => {
-  const { tokens, bridges } = useContext(ConfigContext);
+  const { tokens } = useContext(ConfigContext);
 
-  const [isSuccess, setIsSuccess] = useState(false);
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
   const [transferredTokens, setTransferredTokens] = useState({
     from: '',
@@ -21,24 +16,13 @@ const TransactionItem = ({item}) => {
   });
 
   useEffect(async () => {
-    const eventId = item.args.eventId;
-
-    setTransferredTokens(handleTransferredTokens(item.args, tokens));
-
-    const destNetId = getDestinationNet(item.to, bridges);
-    const otherContractAddress = Object.values(
-      bridges[
-        destNetId === ambChainId
-          ? item.chainId
-          : destNetId
-        ],
-    ).find((el) => el !== item.to);
-
-    const lastStage = await getTxLastStageStatus(destNetId, eventId, otherContractAddress);
-    setIsSuccess(lastStage.length);
+    setTransferredTokens(handleTransferredTokens({
+      tokenTo: item.tokenTo,
+      tokenFrom: item.tokenFrom
+    }, tokens));
 
     setDestinationNetTxHash(
-      lastStage.length ? lastStage[0].transactionHash : '',
+      item.status === 5 ? item.destinationTxHash : '',
     );
   }, []);
 
@@ -66,17 +50,19 @@ const TransactionItem = ({item}) => {
   };
 
   const denomination = useMemo(() => {
-    const tokenAddress = item.args.tokenFrom === '0x0000000000000000000000000000000000000000'
-      ? item.args.tokenTo
-      : item.args.tokenFrom;
+    const tokenAddress = item.tokenFrom === '0x0000000000000000000000000000000000000000'
+      ? item.tokenTo
+      : item.tokenFrom;
 
     const currentToken = tokens.find((el) => el.address === tokenAddress);
-    const networksIds = [+getDestinationNet(item.to, bridges), item.chainId];
-
+    const networksIds = [item.destChainId, item.chainId];
+    if (!currentToken) {
+      return 18
+    }
     if (networksIds.includes(bscChainId)) {
-      return currentToken ? currentToken.decimals.bsc : 18;
+      return currentToken.decimals.bsc;
     } else {
-      return currentToken ? currentToken.decimals.eth : 18;
+      return currentToken.decimals.eth;
     }
   }, [item, tokens]);
 
@@ -84,7 +70,7 @@ const TransactionItem = ({item}) => {
     (el) => el.chainId === item.chainId,
   ).explorerUrl);
 
-  let explorerLink = `${explorer}address/`
+  let explorerLink = `${explorer}addresses/`
 
   return (
     <>
@@ -93,33 +79,35 @@ const TransactionItem = ({item}) => {
         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
       >
         <TableCell>
-          <a href={`${explorerLink}${item.from}`} target="_blank">
-            {item.from}
+          <a href={`${explorerLink}${item.userAddress}`} target="_blank">
+            {item.userAddress}
           </a>
         </TableCell>
         <TableCell>
-          <a href={getTxLink(item.chainId, item.hash)} target="_blank">
+          <a href={getTxLink(item.chainId, item.withdrawTx.txHash)} target="_blank">
             {transferredTokens.from}
           </a>
           ->
           {destinationNetTxHash ? (
-            <a href={getTxLink(+getDestinationNet(item.to, bridges), destinationNetTxHash)} target="_blank">
+            <a href={getTxLink(item.destChainId, destinationNetTxHash)} target="_blank">
               {transferredTokens.to}
             </a>
           ) : transferredTokens.to}
         </TableCell>
-        <TableCell>{item.args.eventId.toNumber()}</TableCell>
+        <TableCell>{item.eventId}</TableCell>
         <TableCell>
-          {utils.formatUnits(item.args.amount, denomination)}
+          {!item.amount.toString().includes('+') && utils.formatUnits(item.amount.toString(), denomination)}
         </TableCell>
         <TableCell>
-          {utils.formatUnits(item.args['transferFeeAmount'].add(item.args['bridgeFeeAmount']), 18)}
-        </TableCell>
-        <TableCell>{formatDate(item.timestamp)}</TableCell>
-        <TableCell>
-          {isSuccess ? 'Success' : (
-            <Status tx={item} />
+          {!item.feeTransfer.toString().includes('+') && !item.feeBridge.toString().includes('+') && utils.formatUnits(
+            BigNumber.from(item.feeTransfer.toString())
+              .add(BigNumber.from(item.feeBridge.toString())),
+            18
           )}
+        </TableCell>
+        <TableCell>{formatDate(item.withdrawTx.txTimestamp)}</TableCell>
+        <TableCell>
+          {item.status}/5
         </TableCell>
       </TableRow>
     </>
