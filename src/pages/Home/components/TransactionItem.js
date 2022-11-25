@@ -7,9 +7,20 @@ import ConfigContext from '../../../context/ConfigContext/context';
 import {allNetworks} from '../../../utils/networks';
 
 const TransactionItem = ({item}) => {
+  const { tokens } = useContext(ConfigContext);
+
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
+  const [transferredTokens, setTransferredTokens] = useState({
+    from: '',
+    to: '',
+  });
 
   useEffect(async () => {
+    setTransferredTokens(handleTransferredTokens({
+      tokenTo: item.tokenTo,
+      tokenFrom: item.tokenFrom
+    }, tokens));
+
     setDestinationNetTxHash(
       item.status === 5 ? item.destinationTxHash : '',
     );
@@ -38,6 +49,23 @@ const TransactionItem = ({item}) => {
     return explorerLink ? `${explorerLink.explorerUrl}tx/${hash}` : null;
   };
 
+  const denomination = useMemo(() => {
+    const tokenAddress = item.tokenFrom === '0x0000000000000000000000000000000000000000'
+      ? item.tokenTo
+      : item.tokenFrom;
+
+    const currentToken = tokens.find((el) => el.address === tokenAddress);
+    const networksIds = [item.destChainId, item.chainId];
+    if (!currentToken) {
+      return 18
+    }
+    if (networksIds.includes(bscChainId)) {
+      return currentToken.decimals.bsc;
+    } else {
+      return currentToken.decimals.eth;
+    }
+  }, [item, tokens]);
+
   const explorer = useMemo(() => Object.values(allNetworks).find(
     (el) => el.chainId === item.chainId,
   ).explorerUrl);
@@ -57,24 +85,24 @@ const TransactionItem = ({item}) => {
         </TableCell>
         <TableCell>
           <a href={getTxLink(item.chainId, item.withdrawTx.txHash)} target="_blank">
-            {item.tokenFrom.name}
+            {transferredTokens.from}
           </a>
           ->
           {destinationNetTxHash ? (
             <a href={getTxLink(item.destChainId, destinationNetTxHash)} target="_blank">
-              {item.tokenTo.name}
+              {transferredTokens.to}
             </a>
-          ) : item.tokenTo.name}
+          ) : transferredTokens.to}
         </TableCell>
         <TableCell>{item.eventId}</TableCell>
         <TableCell>
-          {!item.amount.toString().includes('+') && utils.formatUnits(item.amount.toString(), item.tokenTo.denomination)}
+          {!item.amount.toString().includes('+') && utils.formatUnits(item.amount.toString(), denomination)}
         </TableCell>
         <TableCell>
           {!item.feeTransfer.toString().includes('+') && !item.feeBridge.toString().includes('+') && utils.formatUnits(
             BigNumber.from(item.feeTransfer.toString())
               .add(BigNumber.from(item.feeBridge.toString())),
-            item.tokenFrom.denomination
+            18
           )}
         </TableCell>
         <TableCell>{formatDate(item.withdrawTx.txTimestamp)}</TableCell>

@@ -54,7 +54,7 @@ const Home = () => {
 
     const chains = currentTab.split('/');
 
-    axios.get(`https://backoffice-api.ambrosus-test.io/backoffice?networkFrom=${chains[0]}&networkTo=${chains[1]}`)
+    axios.get(`https://backoffice-api.ambrosus.io/backoffice?networkFrom=${chains[0]}&networkTo=${chains[1]}`)
       .then(({ data }) => {
         let txs = [];
 
