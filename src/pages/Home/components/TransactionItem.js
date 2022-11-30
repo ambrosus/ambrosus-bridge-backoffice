@@ -68,7 +68,7 @@ const TransactionItem = ({item}) => {
         </TableCell>
         <TableCell>{item.eventId}</TableCell>
         <TableCell>
-          {!item.amount.toString().includes('+') && utils.formatUnits(item.amount.toString(), item.tokenTo.denomination)}
+          {item.denominatedAmount}
         </TableCell>
         <TableCell>
           {!item.feeTransfer.toString().includes('+') && !item.feeBridge.toString().includes('+') && utils.formatUnits(
