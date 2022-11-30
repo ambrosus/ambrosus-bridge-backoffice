@@ -71,10 +71,10 @@ const TransactionItem = ({item}) => {
           {item.denominatedAmount}
         </TableCell>
         <TableCell>
-          {!item.feeTransfer.toString().includes('+') && !item.feeBridge.toString().includes('+') && utils.formatUnits(
+          {utils.formatUnits(
             BigNumber.from(item.feeTransfer.toString())
               .add(BigNumber.from(item.feeBridge.toString())),
-            item.tokenFrom.denomination
+            18
           )}
         </TableCell>
         <TableCell>{formatDate(item.withdrawTx.txTimestamp)}</TableCell>
