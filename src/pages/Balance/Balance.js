@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import getTokenBalance from '../../utils/getTokenBalance';
 import providers, {
   ambChainId,
   bscChainId,
@@ -53,6 +52,15 @@ const Balance = () => {
     const USDCOnAMBETHThinkLocked = USDCOnAMB.bridgeBalances(bridges[ethChainId].native);
     const USDCOnAMBBSCThinkLocked = USDCOnAMB.bridgeBalances(bridges[bscChainId].native);
 
+
+    const BUSDOnETH = new ethers.Contract(getTokenAddress('BUSD', bscChainId), ABI, providers[bscChainId]);
+    const BUSDOnEthLocked = BUSDOnETH.balanceOf(bridges[bscChainId].foreign);
+    // const BUSDOnBSC = new ethers.Contract(getTokenAddress('USDC', bscChainId), ABI, providers[bscChainId]);
+    // const BUSDOnBSCLocked = USDCOnBSC.balanceOf(bridges[bscChainId].foreign);
+    const BUSDOnAMB = new ethers.Contract(getTokenAddress('BUSD', ambChainId), ABI, providers[ambChainId]);
+    // const BUSDOnAMBETHThinkLocked = USDCOnAMB.bridgeBalances(bridges[ethChainId].native);
+    const BUSDOnAMBBSCThinkLocked = BUSDOnAMB.bridgeBalances(bridges[bscChainId].native);
+
     Promise.all([
       sAMBOnETHLocked,
       sAMBOnBSCLocked,
@@ -62,6 +70,8 @@ const Balance = () => {
       USDCOnBSCLocked,
       USDCOnAMBETHThinkLocked,
       USDCOnAMBBSCThinkLocked,
+      BUSDOnEthLocked,
+      BUSDOnAMBBSCThinkLocked,
     ]).then((res) => {
       setBalances(res);
       console.log(res);
@@ -82,7 +92,7 @@ const Balance = () => {
             <TableHead>
               <TableRow>
                 {tableHeads.map((el) => (
-                  <TableCell key={el}>{el}</TableCell>
+                    <TableCell key={el}>{el}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -119,6 +129,19 @@ const Balance = () => {
                   {formatValue(utils.formatUnits(balances[5], 18))}
                   /
                   {formatValue(utils.formatUnits(balances[7], 18))}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>BUSD</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>
+                  {formatValue(utils.formatUnits(balances[8], 18))}
+                  /
+                  {formatValue(utils.formatUnits(balances[9], 18))}
+                </TableCell>
+                <TableCell>
+                  -
                 </TableCell>
               </TableRow>
             </TableBody>
