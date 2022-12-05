@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import getTokenBalance from '../../utils/getTokenBalance';
 import providers, {
   ambChainId,
   bscChainId,
@@ -45,24 +44,23 @@ const Balance = () => {
     const sAMBOnETHSupplied = sAMBOnETH.totalSupply();
     const sAMBOnBSCSupplied = sAMBOnBSC.totalSupply();
 
-    const USDTOnETH = new ethers.Contract(getTokenAddress('USDT', ethChainId), ABI, providers[ethChainId]);
-    const USDTOnEthLocked = USDTOnETH.balanceOf(bridges[ethChainId].foreign);
-    const USDTOnAMB = new ethers.Contract(getTokenAddress('USDT', ambChainId), ABI, providers[ambChainId]);
-    const USDTOnAMBETHThinkLocked = USDTOnAMB.bridgeBalances(bridges[ethChainId].native);
-    const BUSDOnBSC = new ethers.Contract(getTokenAddress('BUSD', bscChainId), ABI, providers[bscChainId]);
-    const BUSDOnBSCLocked = BUSDOnBSC.balanceOf(bridges[bscChainId].foreign);
-    const BUSDOnAMB = new ethers.Contract(getTokenAddress('BUSD', ambChainId), ABI, providers[ambChainId]);
-    const BUSDOnAMBETHThinkLocked = BUSDOnAMB.bridgeBalances(bridges[bscChainId].native);
+    const USDCOnETH = new ethers.Contract(getTokenAddress('USDC', ethChainId), ABI, providers[ethChainId]);
+    const USDCOnEthLocked = USDCOnETH.balanceOf(bridges[ethChainId].foreign);
+    const USDCOnBSC = new ethers.Contract(getTokenAddress('USDC', bscChainId), ABI, providers[bscChainId]);
+    const USDCOnBSCLocked = USDCOnBSC.balanceOf(bridges[bscChainId].foreign);
+    const USDCOnAMB = new ethers.Contract(getTokenAddress('USDC', ambChainId), ABI, providers[ambChainId]);
+    const USDCOnAMBETHThinkLocked = USDCOnAMB.bridgeBalances(bridges[ethChainId].native);
+    const USDCOnAMBBSCThinkLocked = USDCOnAMB.bridgeBalances(bridges[bscChainId].native);
 
     Promise.all([
       sAMBOnETHLocked,
       sAMBOnBSCLocked,
       sAMBOnETHSupplied,
       sAMBOnBSCSupplied,
-      USDTOnEthLocked,
-      USDTOnAMBETHThinkLocked,
-      BUSDOnBSCLocked,
-      BUSDOnAMBETHThinkLocked,
+      USDCOnEthLocked,
+      USDCOnBSCLocked,
+      USDCOnAMBETHThinkLocked,
+      USDCOnAMBBSCThinkLocked,
     ]).then((res) => {
       setBalances(res);
       console.log(res);
@@ -71,69 +69,62 @@ const Balance = () => {
 
   const getTokenAddress = (symbol, chainId) => {
     return tokens.find(
-      (token) => token.symbol === symbol && token.chainId === chainId,
+        (token) => token.symbol === symbol && token.chainId === chainId,
     )?.address;
   };
 
   return (
-    balances && (
-      <div>
-        <TableContainer component={Paper}>
-          <Table sx={{ maxWidth: 650 }} size="small" aria-label="a dense table">
-            <TableHead>
-              <TableRow>
-                {tableHeads.map((el) => (
-                  <TableCell key={el}>{el}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>sAMB</TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[0], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[2], 18))}
-                </TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[1], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[3], 18))}
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>USDT</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[4], 6))}
-                  /
-                  {formatValue(utils.formatUnits(balances[5], 18))}
-                </TableCell>
-                <TableCell>-</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>BUSD</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[6], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[7], 18))}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-    )
+      balances && (
+          <div>
+            <TableContainer component={Paper}>
+              <Table sx={{ maxWidth: 650 }} size="small" aria-label="a dense table">
+                <TableHead>
+                  <TableRow>
+                    {tableHeads.map((el) => (
+                        <TableCell key={el}>{el}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>sAMB</TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[0], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[2], 18))}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[1], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[3], 18))}
+                    </TableCell>
+                    <TableCell>
+                      -
+                    </TableCell>
+                    <TableCell>
+                      -
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>USDC</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[4], 6))}
+                      /
+                      {formatValue(utils.formatUnits(balances[6], 18))}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[5], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[7], 18))}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+      )
   );
 };
 

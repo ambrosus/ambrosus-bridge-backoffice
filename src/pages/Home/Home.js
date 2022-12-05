@@ -6,10 +6,8 @@ import {createBridgeContract} from '../../utils/contracts';
 import Balance from '../Balance';
 import Fees from '../Fees/Fees';
 import ConfigContext from '../../context/ConfigContext/context';
-import {getNetFromAddress} from '../../utils/getNetFromAddress';
-import getEventsFromContract from '../../utils/getEventsFromContract';
 import axios from 'axios';
-import {BigNumber} from 'ethers';
+import FeesBalances from "../FeesBalances/FeesBalances";
 
 const Home = () => {
   const { bridges } = useContext(ConfigContext);
@@ -103,6 +101,9 @@ const Home = () => {
       )}
       {currentTab === 100 && (
         <Balance />
+      )}
+      {currentTab === 98 && (
+          <FeesBalances />
       )}
       {!Number.isInteger(currentTab) && (
         <TabPanel txs={transactions} />
