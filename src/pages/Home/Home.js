@@ -56,18 +56,31 @@ const Home = () => {
       .then(({ data }) => {
         let txs = [];
 
+        let departureChainId = ambChainId;
+        let destinationChainId = ambChainId;
+
+        if (chains[0] === 'eth') {
+          departureChainId = ethChainId;
+        } else if (chains[0] === 'bsc') {
+          departureChainId = bscChainId;
+        }
+        if (chains[1] === 'eth') {
+          destinationChainId = ethChainId;
+        } else if (chains[1] === 'bsc') {
+          destinationChainId = bscChainId;
+        }
+
         data.forEach((el) => {
           txs = [...txs, ...el.transfers.map((tx) => ({
             ...tx,
-            chainId: ambChainId,
-            destChainId: ethChainId,
+            chainId: departureChainId,
+            destChainId: destinationChainId,
             eventId: el.eventId,
             destinationTxHash: el.transferFinishTx.txHash,
             status: el.status
           }))]
         })
-
-        setTransactions(txs.reverse())
+        setTransactions(txs.sort((a, b) => b.withdrawTx.txTimestamp - a.withdrawTx.txTimestamp))
       });
   }, [currentTab]);
 
