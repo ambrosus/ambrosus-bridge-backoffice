@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import TransactionItem from './TransactionItem';
 
-const itemsPerPage = 2;
+const itemsPerPage = 20;
 const tableHeads = ['Address', 'Token', 'Event id', 'Amount', 'Fee', 'Date', 'Status'];
 
 const TabPanel = ({ txs }) => {
