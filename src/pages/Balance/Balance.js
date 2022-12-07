@@ -136,12 +136,12 @@ const Balance = () => {
                     <TableCell>-</TableCell>
                     <TableCell>-</TableCell>
                     <TableCell>
+                     -
+                    </TableCell>
+                    <TableCell>
                       {formatValue(utils.formatUnits(balances[8], 18))}
                       /
                       {formatValue(utils.formatUnits(balances[9], 18))}
-                    </TableCell>
-                    <TableCell>
-                      -
                     </TableCell>
                   </TableRow>
                 </TableBody>
