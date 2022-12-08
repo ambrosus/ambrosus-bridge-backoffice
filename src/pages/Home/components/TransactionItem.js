@@ -1,10 +1,8 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, { useEffect, useMemo, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
-import {bscChainId} from '../../../utils/providers';
 import {BigNumber, utils} from 'ethers';
-import handleTransferredTokens from '../../../utils/getTransferredTokens';
-import ConfigContext from '../../../context/ConfigContext/context';
 import {allNetworks} from '../../../utils/networks';
+import {ambChainId} from "../../../utils/providers";
 
 const TransactionItem = ({item}) => {
   const [destinationNetTxHash, setDestinationNetTxHash] = useState(null);
@@ -42,7 +40,7 @@ const TransactionItem = ({item}) => {
     (el) => el.chainId === item.chainId,
   ).explorerUrl);
 
-  let explorerLink = `${explorer}addresses/`
+  let explorerLink = `${explorer}${item.chainId === ambChainId ? 'addresses' : 'address'}/`;
 
   return (
     <>
