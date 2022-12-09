@@ -80,75 +80,75 @@ const Balance = () => {
 
   const getTokenAddress = (symbol, chainId) => {
     return tokens.find(
-      (token) => token.symbol === symbol && token.chainId === chainId,
+        (token) => token.symbol === symbol && token.chainId === chainId,
     )?.address;
   };
 
   return (
-    balances && (
-      <div>
-        <TableContainer component={Paper}>
-          <Table sx={{ maxWidth: 650 }} size="small" aria-label="a dense table">
-            <TableHead>
-              <TableRow>
-                {tableHeads.map((el) => (
-                    <TableCell key={el}>{el}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>sAMB</TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[0], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[2], 18))}
-                </TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[1], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[3], 18))}
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>USDC</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[4], 6))}
-                  /
-                  {formatValue(utils.formatUnits(balances[6], 18))}
-                </TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[5], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[7], 18))}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>BUSD</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>
-                  {formatValue(utils.formatUnits(balances[8], 18))}
-                  /
-                  {formatValue(utils.formatUnits(balances[9], 18))}
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-    )
+      balances && (
+          <div>
+            <TableContainer component={Paper}>
+              <Table sx={{ maxWidth: 650 }} size="small" aria-label="a dense table">
+                <TableHead>
+                  <TableRow>
+                    {tableHeads.map((el) => (
+                        <TableCell key={el}>{el}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>sAMB</TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[0], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[2], 18))}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[1], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[3], 18))}
+                    </TableCell>
+                    <TableCell>
+                      -
+                    </TableCell>
+                    <TableCell>
+                      -
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>USDC</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[4], 6))}
+                      /
+                      {formatValue(utils.formatUnits(balances[6], 18))}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[5], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[7], 18))}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>BUSD</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                     -
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(utils.formatUnits(balances[8], 18))}
+                      /
+                      {formatValue(utils.formatUnits(balances[9], 18))}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+      )
   );
 };
 

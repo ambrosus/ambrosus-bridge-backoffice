@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import providers, {
+  ambChainId,
   bscChainId,
   ethChainId,
 } from '../../utils/providers';
@@ -25,6 +26,7 @@ import getEventsFromContract from '../../utils/getEventsFromContract';
 import getAmbTokenPrice from '../../utils/getAmbTokenPrice';
 import getSymbolPriceBinance from '../../utils/getSymbolPriceBinance';
 import API from '../../api/api';
+import axios from 'axios';
 
 const itemsPerPage = 10;
 
@@ -34,40 +36,29 @@ const Fees = () => {
   const contractAddresses = [
     {
       label: 'Amb/Eth',
-      address: bridges[ethChainId].native,
+      address: 'amb/eth',
     },
     {
       label: 'Eth/Amb',
-      address: bridges[ethChainId].foreign,
+      address: 'eth/amb',
     },
     {
       label: 'Amb/Bsc',
-      address: bridges[bscChainId].native,
+      address: 'amb/bsc',
     },
     {
       label: 'Bsc/Amb',
-      address: bridges[bscChainId].foreign,
+      address: 'bsc/amb',
     },
   ];
 
-  const [txs, setTxs] = useState([]);
-  const [chainId, setChainId] = useState(bridges[ethChainId].native);
+  const [txs, setTxs] = useState({});
+  const [chains, setChains] = useState('amb/eth');
   const [selectedTxs, setSelectedTxs] = useState(null);
   const [ambPrice, setAmbPrice] = useState(null);
   const [tokenPrice, setTokenPrice] = useState(null);
-  const [tab, setTab] = useState(['Amb', 'Eth']);
 
   const allTxs = useRef([]);
-
-  // useEffect(() => {
-  //   fetch('https://token.ambrosus.io/price')
-  //     .then((response) => response.json())
-  //     .then(({ data }) => {
-  //       // setAmbPrice(BigNumber.from(
-  //       //   utils.parseUnits(data.total_price_usd.toString(), 18),
-  //       // ))
-  //     });
-  // }, []);
 
   useEffect(async () => {
     const data = await getAmbTokenPrice();
@@ -75,19 +66,17 @@ const Fees = () => {
   }, []);
 
   useEffect(() => {
-    const provider = providers[getNetFromAddress(chainId, bridges)];
-    const contract = createBridgeContract(chainId, provider);
-    setTxs([]);
-    setSelectedTxs(null);
+    const chns = chains.split('/');
 
-    getEventsFromContract(contract, contract.filters.Withdraw())
-      .then((res) => mapTxsArray(res.reverse()))
-      .catch((e) => console.log(e));
-  }, [chainId]);
+    axios.get(`https://backoffice-api.ambrosus.io/backoffice?networkFrom=${chns[0]}&networkTo=${chns[1]}`)
+      .then(({ data }) => {
+        mapTxsArray(data.reverse())
+      });
+  }, [chains]);
 
   const handleSelectedTxs = (item) => {
     setSelectedTxs((selected) => {
-      if (selected && selected.eventId === item.eventId) {
+      if (selected && item && selected[0].eventId === item[0].eventId) {
         return null;
       }
       return item;
@@ -95,19 +84,7 @@ const Fees = () => {
   };
 
   const mapTxsArray = (transactions) => {
-    const arr = [];
-
-    transactions.map((el) => {
-      const eventId = el.args.eventId.toNumber();
-      const pack = arr.find((pack) => pack.eventId === eventId);
-
-      if (!pack) {
-        arr.push({ eventId, txs: [el] });
-      } else {
-        pack.txs.push(el);
-      }
-    });
-    allTxs.current = arr;
+    allTxs.current = transactions;
     handlePage(null, 1);
   };
 
@@ -117,21 +94,21 @@ const Fees = () => {
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
     const itemsInPage = allTxs.current.slice(fromIdx, fromIdx + itemsPerPage);
 
-    setTxs(itemsInPage);
+    setTxs({ transactions: itemsInPage, chains });
   };
 
   const tableHeads = useMemo(
     () => [
       'Event Id',
-      `${getNetworkByChainId(+getNetFromAddress(chainId, bridges)).code} Fee`,
-      `${getNetworkByChainId(+getDestinationNet(chainId, bridges)).code} Fee`,
+      `${chains.split('/')[0]} Fee`,
+      `${chains.split('/')[1]} Fee`,
       'Status',
     ],
-    [chainId],
+    [chains],
   );
 
-  const isEthToken = tab?.includes('Eth');
-  const isLeftUsdValue = tab[0] === 'Amb';
+  const isEthToken = chains?.includes('eth');
+  const isLeftUsdValue = chains.split('/')[0] === 'amb';
 
   const usdValue = {
     leftUsd: isLeftUsdValue ? ambPrice : tokenPrice,
@@ -143,7 +120,7 @@ const Fees = () => {
     const option = { symbol: token };
     const { data } = await getSymbolPriceBinance(option);
     setTokenPrice(data.price);
-  }, [chainId]);
+  }, [chains]);
 
   const pages = Math.ceil(allTxs.current.length / 10);
 
@@ -151,13 +128,9 @@ const Fees = () => {
     <div className="fees-page">
       {contractAddresses.map((el) => (
         <Button
-          selecter={true}
-          sx={{ margin: '20px', background: el.address === chainId ? '#e4f2ff' : 'transparent' }}
+          sx={{ margin: '20px', background: el.address === chains ? '#e4f2ff' : 'transparent' }}
           variant="outlined"
-          onClick={() => {
-            setChainId(el.address);
-            setTab(el.label.split('/'));
-          }}
+          onClick={() => setChains(el.address)}
           key={el.address}
         >
           {el.label}
@@ -173,21 +146,24 @@ const Fees = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {txs.map((el) => (
+            {txs.transactions?.map((el) => (
               <FeesItem
-                usdValue={usdValue}
-                contractAddress={chainId}
+                tokensPrice={ {
+                  amb: ambPrice,
+                  token: tokenPrice
+                }}
+                chains={txs.chains}
                 key={el.eventId}
                 item={el}
                 handleSelectedTxs={handleSelectedTxs}
-                isOpen={el.eventId === selectedTxs?.eventId}
+                isOpen={selectedTxs && el.eventId === selectedTxs[0]?.eventId}
               />
             ))}
           </TableBody>
         </Table>
       </TableContainer>
       <Pagination count={pages} onChange={handlePage} />
-      {selectedTxs && <TabPanel txs={selectedTxs.txs} />}
+      {selectedTxs && <TabPanel txs={selectedTxs} />}
     </div>
   );
 };
