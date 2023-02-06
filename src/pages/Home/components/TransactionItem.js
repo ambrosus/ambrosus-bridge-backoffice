@@ -40,7 +40,7 @@ const TransactionItem = ({item}) => {
     (el) => el.chainId === item.chainId,
   ).explorerUrl);
 
-  let explorerLink = `${explorer}${item.chainId === ambChainId ? 'addresses' : 'address'}/`;
+  let explorerLink = `${explorer}address/`;
 
   return (
     <>
