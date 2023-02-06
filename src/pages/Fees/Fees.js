@@ -1,10 +1,4 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import providers, {
-  ambChainId,
-  bscChainId,
-  ethChainId,
-} from '../../utils/providers';
-import { createBridgeContract } from '../../utils/contracts';
 import {
   Button,
   Pagination,
@@ -19,14 +13,10 @@ import {
 import FeesItem from './components/FeesItem';
 import TabPanel from '../Home/components/TabPanel';
 import ConfigContext from '../../context/ConfigContext/context';
-import { getNetFromAddress } from '../../utils/getNetFromAddress';
-import { getDestinationNet } from '../../utils/getDestinationNet';
-import { getNetworkByChainId } from '../../utils/networks';
-import getEventsFromContract from '../../utils/getEventsFromContract';
 import getAmbTokenPrice from '../../utils/getAmbTokenPrice';
 import getSymbolPriceBinance from '../../utils/getSymbolPriceBinance';
-import API from '../../api/api';
 import axios from 'axios';
+import {ambChainId, bscChainId, ethChainId} from "../../utils/providers";
 
 const itemsPerPage = 10;
 
@@ -108,12 +98,6 @@ const Fees = () => {
   );
 
   const isEthToken = chains?.includes('eth');
-  const isLeftUsdValue = chains.split('/')[0] === 'amb';
-
-  const usdValue = {
-    leftUsd: isLeftUsdValue ? ambPrice : tokenPrice,
-    rightUsd: isLeftUsdValue ? tokenPrice : ambPrice,
-  };
 
   useEffect(async () => {
     const token = isEthToken ? 'ETHUSDT' : 'BNBUSDT';

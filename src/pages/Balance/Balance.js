@@ -74,7 +74,6 @@ const Balance = () => {
       BUSDOnAMBBSCThinkLocked,
     ]).then((res) => {
       setBalances(res);
-      console.log(res);
     });
   };
 

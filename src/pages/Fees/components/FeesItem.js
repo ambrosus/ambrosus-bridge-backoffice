@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { TableCell, TableRow } from '@mui/material';
 import { BigNumber, utils } from 'ethers';
 import formatAmount from '../../../utils/formatAmount';
-import {ambChainId, ethChainId} from '../../../utils/providers';
+import {ambChainId, bscChainId, ethChainId} from '../../../utils/providers';
 
 const FeesItem = ({
   item,
@@ -18,15 +18,30 @@ const FeesItem = ({
   }, [item]);
 
   const handleTxOpen = () => {
+    const chns = chains.split('/');
+
+    let departureChainId = ambChainId;
+    let destinationChainId = ambChainId;
+
+    if (chns[0] === 'eth') {
+      departureChainId = ethChainId;
+    } else if (chns[0] === 'bsc') {
+      departureChainId = bscChainId;
+    }
+    if (chns[1] === 'eth') {
+      destinationChainId = ethChainId;
+    } else if (chns[1] === 'bsc') {
+      destinationChainId = bscChainId;
+    }
+
     const txs = item.transfers.map((tx) => ({
       ...tx,
-      chainId: ambChainId,
-      destChainId: ethChainId,
+      chainId: departureChainId,
+      destChainId: destinationChainId,
       eventId: item.eventId,
       destinationTxHash: item.transferFinishTx.txHash,
       status: item.status
     }))
-    console.log(txs);
     handleSelectedTxs(txs);
   }
 
