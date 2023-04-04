@@ -8,12 +8,6 @@ const tableHeads = ['Address', 'Token', 'Event id', 'Amount', 'Fee', 'Date', 'St
 const TabPanel = ({ txs }) => {
   const [currentItems, setCurrentItems] = useState([]);
 
-  const sortedTxs = useMemo(() => {
-    return currentItems.sort(
-      (a, b) => b.timestamp - a.timestamp,
-    );
-  }, [currentItems]);
-
   useEffect(() => {
     handleChange(null, 1)
   }, [txs]);
@@ -22,19 +16,7 @@ const TabPanel = ({ txs }) => {
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
     const itemsInPage = txs.slice(fromIdx, fromIdx + itemsPerPage);
 
-    const txsArr = [];
-
-    itemsInPage.forEach(async (el) => {
-      const { timestamp } = await el.getBlock();
-
-      await el.getTransaction().then((trans) => {
-        txsArr.push({ ...trans, timestamp, args: el.args });
-
-        if (txsArr.length === itemsInPage.length) {
-          setCurrentItems(txsArr);
-        }
-      });
-    });
+    setCurrentItems(itemsInPage);
   };
 
   const pages = Math.ceil(txs.length / itemsPerPage)
@@ -51,8 +33,8 @@ const TabPanel = ({ txs }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!!txs.length && sortedTxs.map((el) => (
-              <TransactionItem item={el} key={el.hash}/>
+            {!!txs.length && currentItems.map((el) => (
+              <TransactionItem item={el} key={el.withdrawTx.txHash}/>
             ))}
           </TableBody>
         </Table>
