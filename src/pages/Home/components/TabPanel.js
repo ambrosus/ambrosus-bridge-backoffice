@@ -34,8 +34,8 @@ const TabPanel = ({ txs }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!!txs.length && currentItems.map((el) => (
-              <TransactionItem item={el} key={el.withdrawTx.txTimestamp}/>
+            {!!txs.length && currentItems.map((el, i) => (
+              <TransactionItem item={el} key={el.withdrawTx.txHash + i}/>
             ))}
           </TableBody>
         </Table>
