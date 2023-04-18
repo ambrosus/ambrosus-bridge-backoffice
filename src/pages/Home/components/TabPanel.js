@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import TransactionItem from './TransactionItem';
 
@@ -9,8 +9,9 @@ const TabPanel = ({ txs }) => {
   const [currentItems, setCurrentItems] = useState([]);
 
   useEffect(() => {
-    handleChange(null, 1)
+    handleChange(null, 1);
   }, [txs]);
+
 
   const handleChange = (_, currentPage) => {
     const fromIdx = currentPage === 1 ? 0 : (currentPage - 1) * itemsPerPage;
@@ -19,7 +20,7 @@ const TabPanel = ({ txs }) => {
     setCurrentItems(itemsInPage);
   };
 
-  const pages = Math.ceil(txs.length / itemsPerPage)
+  const pages = Math.ceil(txs.length / itemsPerPage);
 
   return !!txs.length && (
     <div className="tab-panel">
@@ -34,12 +35,12 @@ const TabPanel = ({ txs }) => {
           </TableHead>
           <TableBody>
             {!!txs.length && currentItems.map((el) => (
-              <TransactionItem item={el} key={el.withdrawTx.txHash}/>
+              <TransactionItem item={el} key={el.withdrawTx.txTimestamp}/>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination count={pages} onChange={handleChange}/>
+      <Pagination count={pages} onChange={handleChange} />
     </div>
   );
 };
