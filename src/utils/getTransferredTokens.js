@@ -26,6 +26,6 @@ const handleTransferredTokens = (withDrawArgs, tokens) => {
 };
 
 const findTokenByAddress = (address, tokens) =>
-  tokens.find((el) => el.address === address);
+  tokens.find((el) => el.address.toLowerCase() === address.toLowerCase());
 
 export default handleTransferredTokens;
