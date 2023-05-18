@@ -48,6 +48,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    setTransactions([]);
     if (Number.isInteger(currentTab)) return;
 
     const chains = currentTab.split('/');
