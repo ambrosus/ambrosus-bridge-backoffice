@@ -40,7 +40,7 @@ const TabPanel = ({ txs }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination count={pages} onChange={handleChange} />
+      {txs.length && <Pagination count={pages} onChange={handleChange} />}
     </div>
   );
 };
