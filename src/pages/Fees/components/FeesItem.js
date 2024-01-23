@@ -16,6 +16,7 @@ const FeesItem = ({
       return totalBalance.add(BigNumber.from(el.feeTransfer.toString().includes('+') ? '0' : el.feeTransfer.toString()));
     }, BigNumber.from(0));
   }, [item]);
+  console.log(item);
 
   const handleTxOpen = () => {
     const chns = chains.split('/');
@@ -56,7 +57,7 @@ const FeesItem = ({
   const rightUsd = useMemo(
     () =>
       (
-        +formatAmount(utils.formatUnits(item.gasUsedByRelay[chains.split('/')[1]]?.toString(), 18)) * +tokensPrice[chains.split('/')[1] === 'amb' ? 'amb' : 'token']
+        +formatAmount(utils.formatUnits((item.gasUsedByRelay[chains.split('/')[1]]?.toString() || '0'), 18)) * +tokensPrice[chains.split('/')[1] === 'amb' ? 'amb' : 'token']
       ).toFixed(2),
     [tokensPrice],
   );
@@ -72,7 +73,7 @@ const FeesItem = ({
         <span style={{ color: '#008000' }}>{`(${leftUsd}$)`}</span>
       </TableCell>
       <TableCell>
-        {`${formatAmount(utils.formatUnits(item.gasUsedByRelay[chains.split('/')[1]]?.toString(), 18))}`}
+        {`${formatAmount(utils.formatUnits((item.gasUsedByRelay[chains.split('/')[1]]?.toString() || '0'), 18))}`}
         <span style={{ color: '#008000' }}>{` (${rightUsd}$)`}</span>
       </TableCell>
       <TableCell>{item.status === 5 ? 'Success' : 'Pending'}</TableCell>
