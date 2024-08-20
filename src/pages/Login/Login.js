@@ -42,7 +42,7 @@ const Login = () => {
 	}
 
 	return (<section className="login">
-		<Button onClick={verifyLogin} color="primary" size="large" variant="outlined">Login app</Button>
+		<Button onClick={verifyLogin} color="primary" size="large" variant="outlined">Login</Button>
 	</section>);
 }
 
