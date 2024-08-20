@@ -14,24 +14,25 @@ const Login = () => {
 		const exampleMessage = 'Hello, you are logging in Ambrosus Bridge Backoffice \n\nHave a great day!';
 
 		if (window.ethereum) {
-			try {
-				const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-				const account = accounts[0];
+			const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+			const account = accounts[0];
 
-				const msg = exampleMessage;  // Send the message as is
+			try {
+				const from = account
+				const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`;
 				const sign = await ethereum.request({
 					method: 'personal_sign',
-					params: [msg, account],  // Only pass the message and account
+					params: [msg, from, 'Example password'],
 				});
 
 				const recoveredAddr = recoverPersonalSignature({
 					data: msg,
 					sig: sign,
 				});
-
-				if (verifiedAccounts.includes(recoveredAddr.toLowerCase())) {
-					document.cookie = 'backoffice verified;max-age=86400';
-					history.push('/dashboard');
+				
+				if (verifiedAccounts.includes(recoveredAddr)) {
+					document.cookie = 'backoffice verified;max-age=max-age-in-seconds=86400'
+					history.push('/dashboard')
 				}
 
 			} catch (err) {
